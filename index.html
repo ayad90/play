@@ -7,27 +7,28 @@
     <title>VIP PREMIUM PLAYER</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body, html { margin:0; padding:0; background:#000; color:#fff; overflow-x:hidden; font-family: sans-serif; }
+        body, html { margin:0; padding:0; background:#000; color:#fff; overflow:hidden; font-family: sans-serif; height: 100%; }
         .ad-stack { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 10px 0; background: #000; }
-        .ad-unit { width: 320px; height: 50px; background: #050505; display: flex; justify-content: center; align-items: center; overflow: hidden; border: 1px solid #111; }
+        .ad-unit { width: 320px; height: 50px; background: #050505; display: flex; justify-content: center; align-items: center; overflow: hidden; }
         .video-container { width:100%; aspect-ratio: 16/9; background:#000; position:relative; border-top: 1px solid #222; border-bottom: 1px solid #222; }
         #vPlayer, #vIframe { width:100%; height:100%; display:none; border:none; }
         .dl-box { padding:20px; text-align:center; }
-        .btn { display: flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(to right, #ff9900, #ffcc00); color: #000; padding: 16px; border-radius: 12px; text-decoration: none; font-weight: 900; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(255,153,0,0.4); }
+        .btn { display: flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(to right, #ff9900, #ffcc00); color: #000; padding: 16px; border-radius: 12px; text-decoration: none; font-weight: 900; font-size: 1.1rem; }
     </style>
 </head>
 <body>
 
     <div class="ad-stack">
-        <!-- TOP ADS (320x50) -->
-        <div class="ad-unit"><script type="text/javascript">atOptions = {'key' : '47a243b5b57a4107b0bfa58be36d1997','format' : 'iframe','height' : 50,'width' : 320,'params' : {}};</script><script type="text/javascript" src="https://www.highperformanceformat.com/47a243b5b57a4107b0bfa58be36d1997/invoke.js"></script></div>
+        <div class="ad-unit">
+            <script type="text/javascript">atOptions = {'key' : '47a243b5b57a4107b0bfa58be36d1997','format' : 'iframe','height' : 50,'width' : 320,'params' : {}};</script>
+            <script type="text/javascript" src="https://www.highperformanceformat.com/47a243b5b57a4107b0bfa58be36d1997/invoke.js"></script>
+        </div>
     </div>
 
     <div class="video-container" id="playerBox">
-        <!-- Native Video for MP4/Dropbox -->
         <video id="vPlayer" controls playsinline></video>
-        <!-- Iframe for Xvideos/Hamster/Lulu -->
-        <iframe id="vIframe" allowfullscreen allow="autoplay"></iframe>
+        <!-- SANDBOX ADDED: allow-top-navigation HATA DIYA HAI TAAKI REDIRECT NA HO -->
+        <iframe id="vIframe" sandbox="allow-forms allow-scripts allow-pointer-lock allow-same-origin allow-presentation" allowfullscreen allow="autoplay"></iframe>
     </div>
 
     <div class="dl-box">
@@ -44,30 +45,18 @@
 
         if(v) {
             v = decodeURIComponent(v);
-            
-            // --- 1. XVIDEOS LOGIC ---
             if(v.includes('xvideos.com')) {
                 let xid = v.match(/video(\d+)/);
-                if(xid) {
-                    vIframe.src = "https://www.xvideos.com/embedframe/" + xid[1];
-                    vIframe.style.display = "block";
-                }
+                if(xid) { vIframe.src = "https://www.xvideos.com/embedframe/" + xid[1]; vIframe.style.display = "block"; }
             } 
-            // --- 2. XHAMSTER LOGIC ---
             else if(v.includes('xhamster.com')) {
                 let xhid = v.match(/videos\/.*-(xh\w+)/) || v.match(/videos\/(xh\w+)/);
-                if(xhid) {
-                    vIframe.src = "https://xhamster.com/embed/" + xhid[1];
-                    vIframe.style.display = "block";
-                }
+                if(xhid) { vIframe.src = "https://xhamster.com/embed/" + xhid[1]; vIframe.style.display = "block"; }
             }
-            // --- 3. DROPBOX / DIRECT MP4 ---
             else if(v.includes('dropbox.com') || v.includes('.mp4')) {
                 if(v.includes('dropbox.com')) v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').split('?')[0] + '?raw=1';
-                vPlayer.src = v;
-                vPlayer.style.display = "block";
+                vPlayer.src = v; vPlayer.style.display = "block";
             }
-            // --- 4. OTHER SERVERS (Lulu, Filemoon) ---
             else {
                 vIframe.src = v.replace('/f/', '/e/').replace('/d/', '/e/').replace('/v/', '/e/');
                 vIframe.style.display = "block";
