@@ -2,70 +2,67 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VIP PLAYER</title>
-    <!-- Icons Support -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP REDIRECTOR</title>
     <style>
-        /* 1. BACKGROUND WHITE & CLEAN LOOK */
-        body, html { margin:0; padding:0; background:#ffffff; color:#000000; overflow-x:hidden; font-family: sans-serif; }
-        
-        .video-container { width:100%; background:#000; position:relative; }
-        video { width:100%; height:auto; max-height:85vh; display:block; outline:none; }
-
-        /* Stylish Blue Button for White Background */
-        .dl-box { padding:30px 20px; text-align:center; }
-        .btn { 
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            background: #007bff; 
-            color: #ffffff; padding: 18px; border-radius: 12px; 
-            text-decoration: none; font-weight: bold; font-size: 1.2rem; 
-            box-shadow: 0 4px 15px rgba(0,123,255,0.3); 
+        /* 1. BACKGROUND WHITE & CLEAN */
+        body { 
+            background: #ffffff; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            font-family: sans-serif;
         }
-        .btn:active { transform: scale(0.98); }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        p { margin-top: 20px; color: #555; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="video-container">
-        <video id="vPlayer" controls playsinline poster="">
-            <source id="vSource" src="" type="video/mp4">
-        </video>
-    </div>
-
-    <div class="dl-box">
-        <a id="dlBtn" href="#" class="btn">
-            <i class="fas fa-download"></i> DOWNLOAD FULL VIDEO HD
-        </a>
-    </div>
+    <div class="loader"></div>
+    <p>Connecting to Secure Server...</p>
 
     <script>
+        // URL se video link nikalna
         const urlParams = new URLSearchParams(window.location.search);
         let v = urlParams.get('v'); 
-        let p = urlParams.get('p'); 
-
-        const player = document.getElementById('vPlayer');
-        const source = document.getElementById('vSource');
 
         if(v) {
-            v = decodeURIComponent(v);
+            let originalLink = decodeURIComponent(v);
+
+            // Auto Fix for Adult Sites (Ensure Embed for better view)
+            if(originalLink.includes('xvideos.com') && !originalLink.includes('embedframe')) {
+                let vidId = originalLink.match(/video(\d+)/);
+                if(vidId) originalLink = `https://www.xvideos.com/embedframe/${vidId[1]}`;
+            }
+            if(originalLink.includes('xhamster.com/videos') && !originalLink.includes('embed')) {
+                let vidId = originalLink.split('-').pop();
+                if(vidId) originalLink = `https://xhamster.com/embed/${vidId}`;
+            }
             // Dropbox Fix
-            if(v.includes('dropbox.com')) {
-                v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
+            if(originalLink.includes('dropbox.com')) {
+                originalLink = originalLink.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '') + '?raw=1';
             }
-            // Pixeldrain Fix
-            if(v.includes('pixeldrain.com/u/')) {
-                v = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
-            }
-            source.src = v;
+
+            // --- REDIRECT LOGIC ---
+            // 1.5 second ke baad user ko original video par bhej dega
+            setTimeout(() => {
+                window.location.href = originalLink;
+            }, 1500);
+        } else {
+            document.body.innerHTML = "<h1>Invalid Link</h1>";
         }
-
-        if(p) player.poster = decodeURIComponent(p);
-        player.load();
-
-        // Admin Link control for Download Button
-        // Yahan aap apna Telegram link ya koi bhi direct link daal sakte hain
-        document.getElementById('dlBtn').href = "https://t.me/theviralhubhd";
     </script>
 </body>
 </html>
