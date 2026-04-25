@@ -7,9 +7,6 @@
     <!-- Icons Support -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- 1. MONETAG MAIN SCRIPT (Aapki ID ke saath) -->
-    <script src='//proshoppe.com/vignette.min.js' data-zone='10883203'></script>
-
     <style>
         body { 
             background: #ffffff; 
@@ -28,7 +25,7 @@
         p { color: #666; margin-bottom: 30px; line-height: 1.5; }
         
         .unlock-btn {
-            background: #007bff;
+            background: #28a745;
             color: #fff;
             padding: 18px 40px;
             border-radius: 50px;
@@ -40,75 +37,74 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+            box-shadow: 0 4px 15px rgba(40,167,69,0.3);
             width: 100%;
+            text-decoration: none;
         }
         .unlock-btn:active { transform: scale(0.98); }
-        #status { margin-top: 15px; font-size: 0.8rem; color: #888; }
+        #status { margin-top: 20px; font-size: 0.9rem; color: #888; font-weight: bold; }
+        
+        /* Ad Slot for extra income */
+        .small-ad { width: 300px; height: 50px; margin-bottom: 20px; background: #f9f9f9; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div class="icon-box">
-            <i class="fas fa-lock"></i>
+            <i class="fas fa-play-circle"></i>
         </div>
-        <h2>Video is Locked</h2>
-        <p>To watch this VIP Video, please watch a short ad to support our free server.</p>
+        <h2>Video Ready to Play</h2>
+        <p>Click below to unlock the secure server and start watching in Full HD.</p>
 
-        <!-- Triggers the Ad -->
-        <button id="unlockBtn" class="unlock-btn" onclick="executeAd()">
-            <i class="fas fa-play-circle"></i> WATCH AD & UNLOCK
+        <!-- THIS BUTTON TRIGGERS AD + REDIRECT -->
+        <button id="unlockBtn" class="unlock-btn" onclick="startUnlock()">
+            <i class="fas fa-unlock-alt"></i> UNLOCK & PLAY HD
         </button>
         
-        <p id="status">Video will play automatically after ad</p>
+        <p id="status">Secure redirection enabled</p>
     </div>
 
     <script>
+        // 1. APNA DIRECT LINK YAHAN DALEIN
+        const MY_DIRECT_LINK = "https://omg10.com/4/10632629;
+
         const urlParams = new URLSearchParams(window.location.search);
         let v = urlParams.get('v'); 
 
-        function executeAd() {
+        function startUnlock() {
             const btn = document.getElementById('unlockBtn');
-            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Loading Ad...";
-            
-            // --- YOUR MONETAG REWARDED CALL ---
-            if (typeof show_10883203 === 'function') {
-                show_10883203().then(() => {
-                    // This runs AFTER the user watches the ad
-                    unlockAndRedirect();
-                }).catch((err) => {
-                    // Fallback if ad fails or blocked
-                    console.error("Ad error:", err);
-                    unlockAndRedirect(); 
-                });
-            } else {
-                // If script didn't load, bypass so user doesn't get stuck
-                unlockAndRedirect();
-            }
-        }
+            const status = document.getElementById('status');
 
-        function unlockAndRedirect() {
-            if(v) {
-                let finalUrl = decodeURIComponent(v);
+            // --- STEP 1: OPEN DIRECT LINK IN NEW TAB ---
+            window.open(MY_DIRECT_LINK, '_blank');
 
-                // Auto-Fix for Dropbox/Adult sites
-                if(finalUrl.includes('dropbox.com')) {
-                    finalUrl = finalUrl.replace('www.dropbox.com', 'dl.dropboxusercontent.com').split('?')[0] + '?raw=1';
-                }
-                if(finalUrl.includes('xvideos.com') && !finalUrl.includes('embedframe')) {
-                    let vidId = finalUrl.match(/video(\d+)/);
-                    if(vidId) finalUrl = `https://www.xvideos.com/embedframe/${vidId[1]}`;
-                }
+            // --- STEP 2: SHOW LOADING ON CURRENT PAGE ---
+            btn.style.background = "#333";
+            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Unlocking Video...";
+            status.innerHTML = "Opening secure server... Please wait 2 seconds.";
+            status.style.color = "#ff9900";
 
-                document.getElementById('status').innerHTML = "Success! Redirecting...";
-                document.getElementById('status').style.color = "green";
+            // --- STEP 3: REDIRECT TO VIDEO AFTER 2 SECONDS ---
+            setTimeout(() => {
+                if(v) {
+                    let finalUrl = decodeURIComponent(v);
 
-                // Redirect user to the actual video content
-                setTimeout(() => {
+                    // Auto-Fix for Dropbox/Adult sites
+                    if(finalUrl.includes('dropbox.com')) {
+                        finalUrl = finalUrl.replace('www.dropbox.com', 'dl.dropboxusercontent.com').split('?')[0] + '?raw=1';
+                    }
+                    if(finalUrl.includes('xvideos.com') && !finalUrl.includes('embedframe')) {
+                        let vidId = finalUrl.match(/video(\d+)/);
+                        if(vidId) finalUrl = `https://www.xvideos.com/embedframe/${vidId[1]}`;
+                    }
+
+                    status.innerHTML = "Success! Playing now...";
+                    status.style.color = "green";
+                    
                     window.location.href = finalUrl;
-                }, 1000);
-            }
+                }
+            }, 2500); // 2.5 seconds wait taaki ad click register ho jaye
         }
     </script>
 </body>
