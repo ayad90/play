@@ -20,54 +20,54 @@
             text-align: center;
         }
         .container { padding: 20px; max-width: 400px; }
-        .icon-box { font-size: 4rem; color: #ff9900; margin-bottom: 20px; }
-        h2 { margin: 10px 0; font-size: 1.5rem; color: #333; }
-        p { color: #666; margin-bottom: 30px; line-height: 1.5; }
+        .icon-box { font-size: 4.5rem; color: #28a745; margin-bottom: 20px; }
+        h2 { margin: 10px 0; font-size: 1.6rem; color: #111; }
+        p { color: #555; margin-bottom: 30px; line-height: 1.5; font-size: 1rem; }
         
         .unlock-btn {
             background: #28a745;
             color: #fff;
             padding: 18px 40px;
-            border-radius: 50px;
+            border-radius: 12px;
             border: none;
             cursor: pointer;
-            font-weight: bold;
-            font-size: 1.1rem;
+            font-weight: 800;
+            font-size: 1.2rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            box-shadow: 0 4px 15px rgba(40,167,69,0.3);
+            gap: 12px;
+            box-shadow: 0 5px 15px rgba(40,167,69,0.3);
             width: 100%;
             text-decoration: none;
+            transition: 0.3s;
         }
-        .unlock-btn:active { transform: scale(0.98); }
-        #status { margin-top: 20px; font-size: 0.9rem; color: #888; font-weight: bold; }
+        .unlock-btn:active { transform: scale(0.96); }
         
-        /* Ad Slot for extra income */
-        .small-ad { width: 300px; height: 50px; margin-bottom: 20px; background: #f9f9f9; }
+        #status { margin-top: 25px; font-size: 0.95rem; color: #888; font-weight: 600; }
+        .loader-dots { display: none; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div class="icon-box">
-            <i class="fas fa-play-circle"></i>
+            <i class="fas fa-shield-alt"></i>
         </div>
-        <h2>Video Ready to Play</h2>
-        <p>Click below to unlock the secure server and start watching in Full HD.</p>
+        <h2>Secure Player Locked</h2>
+        <p>Click the button below to unlock the secure high-speed server and start watching in HD.</p>
 
-        <!-- THIS BUTTON TRIGGERS AD + REDIRECT -->
+        <!-- THIS BUTTON TRIGGERS YOUR AD + REDIRECT -->
         <button id="unlockBtn" class="unlock-btn" onclick="startUnlock()">
             <i class="fas fa-unlock-alt"></i> UNLOCK & PLAY HD
         </button>
         
-        <p id="status">Secure redirection enabled</p>
+        <p id="status">Verification Required to Play</p>
     </div>
 
     <script>
-        // 1. APNA DIRECT LINK YAHAN DALEIN
-        const MY_DIRECT_LINK = "https://omg10.com/4/10632629;
+        // --- YOUR AD LINK SETTINGS ---
+        const MY_AD_LINK = "https://omg10.com/4/10632629";
 
         const urlParams = new URLSearchParams(window.location.search);
         let v = urlParams.get('v'); 
@@ -76,35 +76,40 @@
             const btn = document.getElementById('unlockBtn');
             const status = document.getElementById('status');
 
-            // --- STEP 1: OPEN DIRECT LINK IN NEW TAB ---
-            window.open(MY_DIRECT_LINK, '_blank');
+            // 1. Open your ad link in a new window
+            window.open(MY_AD_LINK, '_blank');
 
-            // --- STEP 2: SHOW LOADING ON CURRENT PAGE ---
+            // 2. Change UI to show loading
+            btn.disabled = true;
             btn.style.background = "#333";
-            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Unlocking Video...";
-            status.innerHTML = "Opening secure server... Please wait 2 seconds.";
+            btn.innerHTML = "<i class='fas fa-circle-notch fa-spin'></i> Unlocking...";
+            status.innerHTML = "Opening Secure Server... Wait 3 seconds";
             status.style.color = "#ff9900";
 
-            // --- STEP 3: REDIRECT TO VIDEO AFTER 2 SECONDS ---
+            // 3. Wait 3 seconds then redirect to the actual video
             setTimeout(() => {
                 if(v) {
-                    let finalUrl = decodeURIComponent(v);
+                    let videoUrl = decodeURIComponent(v);
 
-                    // Auto-Fix for Dropbox/Adult sites
-                    if(finalUrl.includes('dropbox.com')) {
-                        finalUrl = finalUrl.replace('www.dropbox.com', 'dl.dropboxusercontent.com').split('?')[0] + '?raw=1';
+                    // Automatic Fixes for common hosters
+                    if(videoUrl.includes('dropbox.com')) {
+                        videoUrl = videoUrl.replace('www.dropbox.com', 'dl.dropboxusercontent.com').split('?')[0] + '?raw=1';
                     }
-                    if(finalUrl.includes('xvideos.com') && !finalUrl.includes('embedframe')) {
-                        let vidId = finalUrl.match(/video(\d+)/);
-                        if(vidId) finalUrl = `https://www.xvideos.com/embedframe/${vidId[1]}`;
+                    if(videoUrl.includes('xvideos.com') && !videoUrl.includes('embedframe')) {
+                        let idMatch = videoUrl.match(/video(\d+)/);
+                        if(idMatch) videoUrl = `https://www.xvideos.com/embedframe/${idMatch[1]}`;
                     }
 
-                    status.innerHTML = "Success! Playing now...";
-                    status.style.color = "green";
+                    status.innerHTML = "Unlocked! Redirecting...";
+                    status.style.color = "#28a745";
                     
-                    window.location.href = finalUrl;
+                    // Final Redirect
+                    window.location.href = videoUrl;
+                } else {
+                    status.innerHTML = "Error: Video link not found!";
+                    status.style.color = "red";
                 }
-            }, 2500); // 2.5 seconds wait taaki ad click register ho jaye
+            }, 3000); // 3 seconds delay for ad registration
         }
     </script>
 </body>
