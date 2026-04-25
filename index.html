@@ -7,7 +7,7 @@
     <title>VIP PREMIUM PLAYER</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body, html { margin:0; padding:0; background:#000; color:#fff; overflow:hidden; font-family: sans-serif; height: 100%; }
+        body, html { margin:0; padding:0; background:#000; color:#fff; overflow-x:hidden; font-family: sans-serif; height: 100%; }
         .ad-stack { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 10px 0; }
         .ad-unit { width: 320px; height: 50px; background: #050505; display: flex; justify-content: center; align-items: center; overflow: hidden; border: 1px solid #111; }
         .video-container { width:100%; aspect-ratio: 16/9; background:#000; position:relative; border-top: 1px solid #222; border-bottom: 1px solid #222; }
@@ -18,14 +18,17 @@
 </head>
 <body>
 
+    <!-- TOP ADS -->
     <div class="ad-stack">
         <div class="ad-unit"><script type="text/javascript">atOptions = {'key' : '47a243b5b57a4107b0bfa58be36d1997','format' : 'iframe','height' : 50,'width' : 320,'params' : {}};</script><script type="text/javascript" src="https://www.highperformanceformat.com/47a243b5b57a4107b0bfa58be36d1997/invoke.js"></script></div>
         <div class="ad-unit"><script type="text/javascript">atOptions = {'key' : '47a243b5b57a4107b0bfa58be36d1997','format' : 'iframe','height' : 50,'width' : 320,'params' : {}};</script><script type="text/javascript" src="https://www.highperformanceformat.com/47a243b5b57a4107b0bfa58be36d1997/invoke.js"></script></div>
     </div>
 
-    <div class="video-container" id="playerBox">
+    <div class="video-container">
+        <!-- For Direct MP4/Dropbox -->
         <video id="vPlayer" controls playsinline></video>
-        <!-- FIXED IFRAME WITH SANDBOX TO PREVENT REDIRECTS -->
+        
+        <!-- For XVideos - Fixed with Sandbox -->
         <iframe id="vIframe" 
                 sandbox="allow-forms allow-scripts allow-pointer-lock allow-same-origin allow-presentation" 
                 allowfullscreen allow="autoplay">
@@ -38,6 +41,7 @@
         </a>
     </div>
 
+    <!-- BOTTOM ADS -->
     <div class="ad-stack">
         <div class="ad-unit"><script type="text/javascript">atOptions = {'key' : '47a243b5b57a4107b0bfa58be36d1997','format' : 'iframe','height' : 50,'width' : 320,'params' : {}};</script><script type="text/javascript" src="https://www.highperformanceformat.com/47a243b5b57a4107b0bfa58be36d1997/invoke.js"></script></div>
         <div class="ad-unit"><script type="text/javascript">atOptions = {'key' : '47a243b5b57a4107b0bfa58be36d1997','format' : 'iframe','height' : 50,'width' : 320,'params' : {}};</script><script type="text/javascript" src="https://www.highperformanceformat.com/47a243b5b57a4107b0bfa58be36d1997/invoke.js"></script></div>
@@ -53,28 +57,24 @@
         if(v) {
             v = decodeURIComponent(v);
             
-            // 1. XVIDEOS
+            // --- XVIDEOS ONLY LOGIC ---
             if(v.includes('xvideos.com')) {
+                // Extracts ID from link like .../video123456/title
                 let id = v.split('/video')[1] ? v.split('/video')[1].split('/')[0] : "";
-                vIframe.src = "https://www.xvideos.com/embedframe/" + id;
-                vIframe.style.display = "block";
+                if(id) {
+                    vIframe.src = "https://www.xvideos.com/embedframe/" + id;
+                    vIframe.style.display = "block";
+                }
             } 
-            // 2. XHAMSTER
-            else if(v.includes('xhamster.com')) {
-                let id = v.split('/videos/')[1] ? v.split('/videos/')[1].split('-').pop() : "";
-                if(!id) id = v.split('/').pop();
-                vIframe.src = "https://xhamster.com/embed/" + id;
-                vIframe.style.display = "block";
-            }
-            // 3. DROPBOX / DIRECT MP4
-            else if(v.includes('dropbox.com') || v.includes('.mp4')) {
+            // --- DROPBOX / DIRECT MP4 ---
+            else if(v.includes('dropbox.com') || v.match(/\.(mp4|mkv|webm)($|\?)/)) {
                 if(v.includes('dropbox.com')) v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').split('?')[0] + '?raw=1';
                 vPlayer.src = v;
                 if(p) vPlayer.poster = decodeURIComponent(p);
                 vPlayer.style.display = "block";
                 vPlayer.load();
             }
-            // 4. FALLBACK (Lulu, Filemoon, etc)
+            // --- FALLBACK FOR OTHER SERVERS ---
             else {
                 vIframe.src = v.replace('/f/', '/e/').replace('/d/', '/e/').replace('/v/', '/e/');
                 vIframe.style.display = "block";
