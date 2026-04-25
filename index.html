@@ -3,113 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIP VIDEO UNLOCKER</title>
-    <!-- Icons Support -->
+    <title>VIP FAST UNLOCK</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
     <style>
-        body { 
-            background: #ffffff; 
-            margin: 0; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh; 
-            font-family: sans-serif;
-            text-align: center;
-        }
+        body { background: #ffffff; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; text-align: center; }
         .container { padding: 20px; max-width: 400px; }
-        .icon-box { font-size: 4.5rem; color: #28a745; margin-bottom: 20px; }
-        h2 { margin: 10px 0; font-size: 1.6rem; color: #111; }
-        p { color: #555; margin-bottom: 30px; line-height: 1.5; font-size: 1rem; }
-        
+        .icon-box { font-size: 5rem; color: #007bff; margin-bottom: 20px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        h2 { font-size: 1.8rem; color: #111; margin: 10px 0; }
+        p { color: #666; margin-bottom: 30px; font-size: 1.1rem; }
         .unlock-btn {
-            background: #28a745;
-            color: #fff;
-            padding: 18px 40px;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
-            font-weight: 800;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            box-shadow: 0 5px 15px rgba(40,167,69,0.3);
-            width: 100%;
-            text-decoration: none;
-            transition: 0.3s;
+            background: #007bff; color: #fff; padding: 20px; border-radius: 15px; border: none;
+            cursor: pointer; font-weight: 800; font-size: 1.3rem; width: 100%;
+            box-shadow: 0 10px 20px rgba(0,123,255,0.3); transition: 0.2s;
         }
-        .unlock-btn:active { transform: scale(0.96); }
-        
-        #status { margin-top: 25px; font-size: 0.95rem; color: #888; font-weight: 600; }
-        .loader-dots { display: none; }
+        .unlock-btn:active { transform: scale(0.95); }
+        #status { margin-top: 20px; font-size: 0.9rem; color: #ff9900; font-weight: bold; display: none; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="icon-box">
-            <i class="fas fa-shield-alt"></i>
-        </div>
-        <h2>Secure Player Locked</h2>
-        <p>Click the button below to unlock the secure high-speed server and start watching in HD.</p>
+        <div class="icon-box"><i class="fas fa-play-circle"></i></div>
+        <h2>Server is Ready</h2>
+        <p>Click below to start high-speed streaming instantly.</p>
 
-        <!-- THIS BUTTON TRIGGERS YOUR AD + REDIRECT -->
-        <button id="unlockBtn" class="unlock-btn" onclick="startUnlock()">
-            <i class="fas fa-unlock-alt"></i> UNLOCK & PLAY HD
+        <button id="unlockBtn" class="unlock-btn" onclick="handleUnlock()">
+            FAST UNLOCK & PLAY
         </button>
         
-        <p id="status">Verification Required to Play</p>
+        <div id="status">⚡ Unlocking Secure Stream...</div>
     </div>
 
     <script>
-        // --- YOUR AD LINK SETTINGS ---
         const MY_AD_LINK = "https://omg10.com/4/10632629";
-
         const urlParams = new URLSearchParams(window.location.search);
         let v = urlParams.get('v'); 
 
-        function startUnlock() {
+        function handleUnlock() {
             const btn = document.getElementById('unlockBtn');
             const status = document.getElementById('status');
 
-            // 1. Open your ad link in a new window
+            // --- TRICK: OPEN AD IN NEW TAB ---
             window.open(MY_AD_LINK, '_blank');
 
-            // 2. Change UI to show loading
-            btn.disabled = true;
-            btn.style.background = "#333";
-            btn.innerHTML = "<i class='fas fa-circle-notch fa-spin'></i> Unlocking...";
-            status.innerHTML = "Opening Secure Server... Wait 3 seconds";
-            status.style.color = "#ff9900";
+            // --- IMMEDIATELY START REDIRECT ON MAIN PAGE ---
+            btn.style.display = "none";
+            status.style.display = "block";
 
-            // 3. Wait 3 seconds then redirect to the actual video
             setTimeout(() => {
                 if(v) {
                     let videoUrl = decodeURIComponent(v);
 
-                    // Automatic Fixes for common hosters
+                    // Auto-fixers
                     if(videoUrl.includes('dropbox.com')) {
                         videoUrl = videoUrl.replace('www.dropbox.com', 'dl.dropboxusercontent.com').split('?')[0] + '?raw=1';
                     }
                     if(videoUrl.includes('xvideos.com') && !videoUrl.includes('embedframe')) {
-                        let idMatch = videoUrl.match(/video(\d+)/);
-                        if(idMatch) videoUrl = `https://www.xvideos.com/embedframe/${idMatch[1]}`;
+                        let id = videoUrl.match(/video(\d+)/);
+                        if(id) videoUrl = `https://www.xvideos.com/embedframe/${id[1]}`;
                     }
 
-                    status.innerHTML = "Unlocked! Redirecting...";
-                    status.style.color = "#28a745";
-                    
-                    // Final Redirect
+                    // User ko actual video par bhej do bina ad khatam hone ka wait kiye
                     window.location.href = videoUrl;
-                } else {
-                    status.innerHTML = "Error: Video link not found!";
-                    status.style.color = "red";
                 }
-            }, 3000); // 3 seconds delay for ad registration
+            }, 1000); // Sirf 1 second ka gap taaki ad click count ho jaye
         }
     </script>
 </body>
