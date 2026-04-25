@@ -3,103 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VIP PREMIUM PLAYER</title>
+    <title>VIP PLAYER</title>
+    <!-- Icons Support -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #ff9900; --bg: #000; }
-        body, html { margin:0; padding:0; background: var(--bg); color:#fff; overflow-x:hidden; font-family: sans-serif; height: 100%; }
+        /* 1. BACKGROUND WHITE & CLEAN LOOK */
+        body, html { margin:0; padding:0; background:#ffffff; color:#000000; overflow-x:hidden; font-family: sans-serif; }
         
-        .ad-container { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 0; }
-        .ad-box { width: 320px; height: 50px; background: #050505; display: flex; justify-content: center; align-items: center; overflow: hidden; border: 1px solid #111; }
+        .video-container { width:100%; background:#000; position:relative; }
+        video { width:100%; height:auto; max-height:85vh; display:block; outline:none; }
 
-        .player-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; border-top: 1px solid #222; border-bottom: 1px solid #222; position: relative; }
-        #video-container { width: 100%; height: 100%; }
-        video, iframe { width: 100%; height: 100%; border: none; display: block; }
-
-        .action-area { padding: 20px; text-align: center; }
-        .premium-btn { 
-            display: flex; align-items: center; justify-content: center; gap: 12px;
-            background: linear-gradient(45deg, #ff9900, #ffcc00); 
-            color: #000; padding: 18px; border-radius: 12px; 
-            text-decoration: none; font-weight: 900; font-size: 1.1rem; 
-            box-shadow: 0 8px 25px rgba(255,153,0,0.4); 
+        /* Stylish Blue Button for White Background */
+        .dl-box { padding:30px 20px; text-align:center; }
+        .btn { 
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            background: #007bff; 
+            color: #ffffff; padding: 18px; border-radius: 12px; 
+            text-decoration: none; font-weight: bold; font-size: 1.2rem; 
+            box-shadow: 0 4px 15px rgba(0,123,255,0.3); 
         }
+        .btn:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
 
-    <!-- TOP ADS -->
-    <div class="ad-container">
-        <div class="ad-box">
-            <script type="text/javascript">
-                atOptions = { 'key' : '47a243b5b57a4107b0bfa58be36d1997', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
-            </script>
-            <script type="text/javascript" src="https://www.highperformanceformat.com/47a243b5b57a4107b0bfa58be36d1997/invoke.js"></script>
-        </div>
+    <div class="video-container">
+        <video id="vPlayer" controls playsinline poster="">
+            <source id="vSource" src="" type="video/mp4">
+        </video>
     </div>
 
-    <!-- DYNAMIC PLAYER -->
-    <div class="player-wrapper">
-        <div id="video-container">
-            <!-- Content will load here -->
-        </div>
-    </div>
-
-    <!-- DOWNLOAD BUTTON -->
-    <div class="action-area">
-        <a id="dlBtn" href="https://www.effectivegatecpm.com/vwizjp7s?key=82eaaf585ed86a0767368d003252b739" class="premium-btn">
-            <i class="fas fa-crown"></i> DOWNLOAD FULL HD VIDEO
+    <div class="dl-box">
+        <a id="dlBtn" href="#" class="btn">
+            <i class="fas fa-download"></i> DOWNLOAD FULL VIDEO HD
         </a>
-    </div>
-
-    <!-- BOTTOM ADS -->
-    <div class="ad-container">
-        <div class="ad-box">
-            <script type="text/javascript">
-                atOptions = { 'key' : '47a243b5b57a4107b0bfa58be36d1997', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
-            </script>
-            <script type="text/javascript" src="https://www.highperformanceformat.com/47a243b5b57a4107b0bfa58be36d1997/invoke.js"></script>
-        </div>
     </div>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         let v = urlParams.get('v'); 
         let p = urlParams.get('p'); 
-        const container = document.getElementById('video-container');
+
+        const player = document.getElementById('vPlayer');
+        const source = document.getElementById('vSource');
 
         if(v) {
             v = decodeURIComponent(v);
-            
-            // 1. XVIDEOS FIX: Using the mobile-friendly embed link
-            if(v.includes('xvideos.com')) {
-                let videoId = v.match(/video(\d+)/);
-                if(videoId) {
-                    container.innerHTML = `<iframe src="https://www.xvideos.com/embedframe/${videoId[1]}" frameborder="0" width="100%" height="100%" scrolling="no" allowfullscreen="true"></iframe>`;
-                }
-            } 
-            // 2. DROPBOX FIX
-            else if(v.includes('dropbox.com')) {
-                let direct = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
-                container.innerHTML = `<video controls autoplay playsinline poster="${p}"><source src="${direct}" type="video/mp4"></video>`;
+            // Dropbox Fix
+            if(v.includes('dropbox.com')) {
+                v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
             }
-            // 3. PIXELDRAIN FIX
-            else if(v.includes('pixeldrain.com/u/')) {
-                let pdId = v.split('/').pop();
-                container.innerHTML = `<video controls autoplay playsinline poster="${p}"><source src="https://pixeldrain.com/api/file/${pdId}" type="video/mp4"></video>`;
+            // Pixeldrain Fix
+            if(v.includes('pixeldrain.com/u/')) {
+                v = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
             }
-            // 4. OTHER SERVERS (Vidhide, Filemoon, etc.)
-            else {
-                // If it's a direct mp4 link
-                if(v.match(/\.(mp4|mkv|webm)/)) {
-                    container.innerHTML = `<video controls autoplay playsinline poster="${p}"><source src="${v}" type="video/mp4"></video>`;
-                } else {
-                    // Embed fix for Lulu/Filemoon
-                    let finalUrl = v.replace('/f/', '/e/').replace('/v/', '/e/').replace('/d/', '/e/');
-                    container.innerHTML = `<iframe src="${finalUrl}" allowfullscreen="true" scrolling="no"></iframe>`;
-                }
-            }
+            source.src = v;
         }
+
+        if(p) player.poster = decodeURIComponent(p);
+        player.load();
+
+        // Admin Link control for Download Button
+        // Yahan aap apna Telegram link ya koi bhi direct link daal sakte hain
+        document.getElementById('dlBtn').href = "https://t.me/theviralhubhd";
     </script>
 </body>
 </html>
