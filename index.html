@@ -7,16 +7,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --primary: #ff9900; --bg: #000; }
-        body, html { margin:0; padding:0; background: var(--bg); color:#fff; overflow-x:hidden; font-family: sans-serif; }
+        body, html { margin:0; padding:0; background: var(--bg); color:#fff; overflow-x:hidden; font-family: sans-serif; height: 100%; }
         
-        .ad-container { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px 0; }
+        .ad-container { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 0; }
         .ad-box { width: 320px; height: 50px; background: #050505; display: flex; justify-content: center; align-items: center; overflow: hidden; border: 1px solid #111; }
 
-        .player-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; border-top: 1px solid #222; border-bottom: 1px solid #222; box-shadow: 0 0 25px rgba(255, 153, 0, 0.2); }
+        .player-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; border-top: 1px solid #222; border-bottom: 1px solid #222; position: relative; }
         #video-container { width: 100%; height: 100%; }
         video, iframe { width: 100%; height: 100%; border: none; display: block; }
 
-        .action-area { padding: 25px 20px; text-align: center; }
+        .action-area { padding: 20px; text-align: center; }
         .premium-btn { 
             display: flex; align-items: center; justify-content: center; gap: 12px;
             background: linear-gradient(45deg, #ff9900, #ffcc00); 
@@ -39,9 +39,9 @@
     </div>
 
     <!-- DYNAMIC PLAYER -->
-    <div class="player-wrapper" id="player-wrapper">
+    <div class="player-wrapper">
         <div id="video-container">
-            <!-- Video ya Iframe yahan load hoga -->
+            <!-- Content will load here -->
         </div>
     </div>
 
@@ -71,30 +71,33 @@
         if(v) {
             v = decodeURIComponent(v);
             
-            // 1. XVIDEOS AUTO-CONVERTER
+            // 1. XVIDEOS FIX: Using the mobile-friendly embed link
             if(v.includes('xvideos.com')) {
-                let match = v.match(/video(\d+)/);
-                if(match) {
-                    let id = match[1];
-                    container.innerHTML = `<iframe src="https://www.xvideos.com/embedframe/${id}" allowfullscreen></iframe>`;
+                let videoId = v.match(/video(\d+)/);
+                if(videoId) {
+                    container.innerHTML = `<iframe src="https://www.xvideos.com/embedframe/${videoId[1]}" frameborder="0" width="100%" height="100%" scrolling="no" allowfullscreen="true"></iframe>`;
                 }
             } 
             // 2. DROPBOX FIX
             else if(v.includes('dropbox.com')) {
-                v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').split('?')[0] + '?raw=1';
-                container.innerHTML = `<video id="vPlayer" controls autoplay playsinline poster="${p}"><source src="${v}" type="video/mp4"></video>`;
+                let direct = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
+                container.innerHTML = `<video controls autoplay playsinline poster="${p}"><source src="${direct}" type="video/mp4"></video>`;
             }
             // 3. PIXELDRAIN FIX
             else if(v.includes('pixeldrain.com/u/')) {
-                v = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
-                container.innerHTML = `<video id="vPlayer" controls autoplay playsinline poster="${p}"><source src="${v}" type="video/mp4"></video>`;
+                let pdId = v.split('/').pop();
+                container.innerHTML = `<video controls autoplay playsinline poster="${p}"><source src="https://pixeldrain.com/api/file/${pdId}" type="video/mp4"></video>`;
             }
-            // 4. GENERAL MP4 OR OTHER EMBEDS
-            else if(v.match(/\.(mp4|mkv|webm)/)) {
-                container.innerHTML = `<video id="vPlayer" controls autoplay playsinline poster="${p}"><source src="${v}" type="video/mp4"></video>`;
-            }
+            // 4. OTHER SERVERS (Vidhide, Filemoon, etc.)
             else {
-                container.innerHTML = `<iframe src="${v}" allowfullscreen></iframe>`;
+                // If it's a direct mp4 link
+                if(v.match(/\.(mp4|mkv|webm)/)) {
+                    container.innerHTML = `<video controls autoplay playsinline poster="${p}"><source src="${v}" type="video/mp4"></video>`;
+                } else {
+                    // Embed fix for Lulu/Filemoon
+                    let finalUrl = v.replace('/f/', '/e/').replace('/v/', '/e/').replace('/d/', '/e/');
+                    container.innerHTML = `<iframe src="${finalUrl}" allowfullscreen="true" scrolling="no"></iframe>`;
+                }
             }
         }
     </script>
