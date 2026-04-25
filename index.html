@@ -3,9 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIP REDIRECTOR</title>
+    <title>VIP VIDEO UNLOCKER</title>
+    <!-- Icons Support -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- 1. MONETAG MAIN SCRIPT (Aapki ID ke saath) -->
+    <script src='//proshoppe.com/vignette.min.js' data-zone='10883203'></script>
+
     <style>
-        /* 1. BACKGROUND WHITE & CLEAN */
         body { 
             background: #ffffff; 
             margin: 0; 
@@ -15,53 +20,95 @@
             justify-content: center; 
             height: 100vh; 
             font-family: sans-serif;
+            text-align: center;
         }
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #007bff;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
+        .container { padding: 20px; max-width: 400px; }
+        .icon-box { font-size: 4rem; color: #ff9900; margin-bottom: 20px; }
+        h2 { margin: 10px 0; font-size: 1.5rem; color: #333; }
+        p { color: #666; margin-bottom: 30px; line-height: 1.5; }
+        
+        .unlock-btn {
+            background: #007bff;
+            color: #fff;
+            padding: 18px 40px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+            width: 100%;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        p { margin-top: 20px; color: #555; font-weight: bold; }
+        .unlock-btn:active { transform: scale(0.98); }
+        #status { margin-top: 15px; font-size: 0.8rem; color: #888; }
     </style>
 </head>
 <body>
 
-    <div class="loader"></div>
-    <p>Connecting to Secure Server...</p>
+    <div class="container">
+        <div class="icon-box">
+            <i class="fas fa-lock"></i>
+        </div>
+        <h2>Video is Locked</h2>
+        <p>To watch this VIP Video, please watch a short ad to support our free server.</p>
+
+        <!-- Triggers the Ad -->
+        <button id="unlockBtn" class="unlock-btn" onclick="executeAd()">
+            <i class="fas fa-play-circle"></i> WATCH AD & UNLOCK
+        </button>
+        
+        <p id="status">Video will play automatically after ad</p>
+    </div>
 
     <script>
-        // URL se video link nikalna
         const urlParams = new URLSearchParams(window.location.search);
         let v = urlParams.get('v'); 
 
-        if(v) {
-            let originalLink = decodeURIComponent(v);
+        function executeAd() {
+            const btn = document.getElementById('unlockBtn');
+            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Loading Ad...";
+            
+            // --- YOUR MONETAG REWARDED CALL ---
+            if (typeof show_10883203 === 'function') {
+                show_10883203().then(() => {
+                    // This runs AFTER the user watches the ad
+                    unlockAndRedirect();
+                }).catch((err) => {
+                    // Fallback if ad fails or blocked
+                    console.error("Ad error:", err);
+                    unlockAndRedirect(); 
+                });
+            } else {
+                // If script didn't load, bypass so user doesn't get stuck
+                unlockAndRedirect();
+            }
+        }
 
-            // Auto Fix for Adult Sites (Ensure Embed for better view)
-            if(originalLink.includes('xvideos.com') && !originalLink.includes('embedframe')) {
-                let vidId = originalLink.match(/video(\d+)/);
-                if(vidId) originalLink = `https://www.xvideos.com/embedframe/${vidId[1]}`;
-            }
-            if(originalLink.includes('xhamster.com/videos') && !originalLink.includes('embed')) {
-                let vidId = originalLink.split('-').pop();
-                if(vidId) originalLink = `https://xhamster.com/embed/${vidId}`;
-            }
-            // Dropbox Fix
-            if(originalLink.includes('dropbox.com')) {
-                originalLink = originalLink.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '') + '?raw=1';
-            }
+        function unlockAndRedirect() {
+            if(v) {
+                let finalUrl = decodeURIComponent(v);
 
-            // --- REDIRECT LOGIC ---
-            // 1.5 second ke baad user ko original video par bhej dega
-            setTimeout(() => {
-                window.location.href = originalLink;
-            }, 1500);
-        } else {
-            document.body.innerHTML = "<h1>Invalid Link</h1>";
+                // Auto-Fix for Dropbox/Adult sites
+                if(finalUrl.includes('dropbox.com')) {
+                    finalUrl = finalUrl.replace('www.dropbox.com', 'dl.dropboxusercontent.com').split('?')[0] + '?raw=1';
+                }
+                if(finalUrl.includes('xvideos.com') && !finalUrl.includes('embedframe')) {
+                    let vidId = finalUrl.match(/video(\d+)/);
+                    if(vidId) finalUrl = `https://www.xvideos.com/embedframe/${vidId[1]}`;
+                }
+
+                document.getElementById('status').innerHTML = "Success! Redirecting...";
+                document.getElementById('status').style.color = "green";
+
+                // Redirect user to the actual video content
+                setTimeout(() => {
+                    window.location.href = finalUrl;
+                }, 1000);
+            }
         }
     </script>
 </body>
