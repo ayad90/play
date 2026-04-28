@@ -2,72 +2,170 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIP FAST UNLOCK</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="referrer" content="no-referrer">
+    <title>VIP STREAMING</title>
+    <!-- Icons Support -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #ffffff; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; text-align: center; }
-        .container { padding: 20px; max-width: 400px; }
-        .icon-box { font-size: 5rem; color: #007bff; margin-bottom: 20px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-        h2 { font-size: 1.8rem; color: #111; margin: 10px 0; }
-        p { color: #666; margin-bottom: 30px; font-size: 1.1rem; }
-        .unlock-btn {
-            background: #007bff; color: #fff; padding: 20px; border-radius: 15px; border: none;
-            cursor: pointer; font-weight: 800; font-size: 1.3rem; width: 100%;
-            box-shadow: 0 10px 20px rgba(0,123,255,0.3); transition: 0.2s;
+        /* BASE STYLES */
+        * { box-sizing: border-box; }
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: #ffffff; /* White Background */
+            color: #000; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .unlock-btn:active { transform: scale(0.95); }
-        #status { margin-top: 20px; font-size: 0.9rem; color: #ff9900; font-weight: bold; display: none; }
+
+        /* VIDEO AREA */
+        .player-con {
+            width: 100%;
+            background: #000; /* Video black background par hi achi lagti hai */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+            max-height: 70vh;
+            display: block;
+            outline: none;
+        }
+
+        /* BUTTON GROUP (SIDE BY SIDE) */
+        .btn-group {
+            display: flex;
+            width: 100%;
+            padding: 20px;
+            gap: 12px; /* Gaps between buttons */
+            justify-content: center;
+        }
+
+        .action-btn {
+            flex: 1; /* Dono buttons barabar size ke honge */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 15px 10px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+            outline: none;
+        }
+
+        /* SHARE BUTTON STYLE */
+        .btn-share {
+            background: #f0f2f5;
+            color: #1c1e21;
+            border: 1px solid #ddd;
+        }
+        .btn-share:active { background: #e4e6eb; }
+
+        /* DOWNLOAD BUTTON STYLE */
+        .btn-download {
+            background: #1f80e0; /* JioHotstar Blue */
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(31,128,224,0.3);
+        }
+        .btn-download:active { background: #1668b8; }
+
+        /* LOADER */
+        #loader {
+            position: absolute;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1f80e0;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="icon-box"><i class="fas fa-play-circle"></i></div>
-        <h2>Server is Ready</h2>
-        <p>Click below to start high-speed streaming instantly.</p>
+    <div class="player-con">
+        <div id="loader"></div>
+        <video id="vPlayer" controls playsinline poster="" onplaying="document.getElementById('loader').style.display='none'">
+            <source id="vSource" src="" type="video/mp4">
+        </video>
+    </div>
 
-        <button id="unlockBtn" class="unlock-btn" onclick="handleUnlock()">
-            FAST UNLOCK & PLAY
+    <!-- BUTTONS IN ONE LINE -->
+    <div class="btn-group">
+        <button class="action-btn btn-share" onclick="shareMe()">
+            <i class="fas fa-share-alt"></i> SHARE
         </button>
         
-        <div id="status">⚡ Unlocking Secure Stream...</div>
+        <a id="dlBtn" href="#" class="action-btn btn-download">
+            <i class="fas fa-download"></i> DOWNLOAD
+        </a>
     </div>
 
     <script>
-        const MY_AD_LINK = "https://omg10.com/4/10632629";
         const urlParams = new URLSearchParams(window.location.search);
         let v = urlParams.get('v'); 
+        let p = urlParams.get('p'); 
 
-        function handleUnlock() {
-            const btn = document.getElementById('unlockBtn');
-            const status = document.getElementById('status');
+        const player = document.getElementById('vPlayer');
+        const source = document.getElementById('vSource');
+        const dlBtn = document.getElementById('dlBtn');
 
-            // --- TRICK: OPEN AD IN NEW TAB ---
-            window.open(MY_AD_LINK, '_blank');
+        if(v) {
+            v = decodeURIComponent(v);
+            let rawLink = v;
 
-            // --- IMMEDIATELY START REDIRECT ON MAIN PAGE ---
-            btn.style.display = "none";
-            status.style.display = "block";
+            // Dropbox Fix
+            if(v.includes('dropbox.com')) {
+                rawLink = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').split('?')[0] + '?raw=1';
+            }
+            // Pixeldrain Fix
+            if(v.includes('pixeldrain.com/u/')) {
+                rawLink = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
+            }
 
-            setTimeout(() => {
-                if(v) {
-                    let videoUrl = decodeURIComponent(v);
+            source.src = rawLink;
+            // Download button ko direct link par bhejna
+            dlBtn.href = rawLink;
+            player.load();
+        }
 
-                    // Auto-fixers
-                    if(videoUrl.includes('dropbox.com')) {
-                        videoUrl = videoUrl.replace('www.dropbox.com', 'dl.dropboxusercontent.com').split('?')[0] + '?raw=1';
-                    }
-                    if(videoUrl.includes('xvideos.com') && !videoUrl.includes('embedframe')) {
-                        let id = videoUrl.match(/video(\d+)/);
-                        if(id) videoUrl = `https://www.xvideos.com/embedframe/${id[1]}`;
-                    }
+        if(p) player.poster = decodeURIComponent(p);
 
-                    // User ko actual video par bhej do bina ad khatam hone ka wait kiye
-                    window.location.href = videoUrl;
-                }
-            }, 1000); // Sirf 1 second ka gap taaki ad click count ho jaye
+        // SHARE FUNCTION (Copies current GitHub Link)
+        function shareMe() {
+            const shareData = {
+                title: 'Watch VIP Video',
+                text: 'Check out this HD video without ads!',
+                url: window.location.href
+            };
+
+            if (navigator.share) {
+                navigator.share(shareData);
+            } else {
+                // Fallback: Copy Link
+                const el = document.createElement('textarea');
+                el.value = window.location.href;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+                alert("Link Copied to Clipboard!");
+            }
         }
     </script>
 </body>
