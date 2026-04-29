@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,163 +6,152 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="referrer" content="no-referrer">
     <title>VIP PLAYER</title>
-    <!-- Icons -->
+    <!-- Icons Support -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* NATIVE APP FEEL CSS */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        /* Poori screen ko safed aur center karne ke liye */
         body, html { 
             margin: 0; padding: 0; 
             width: 100%; height: 100%; 
-            background: #ffffff; /* Page Background White */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #ffffff; /* Background White */
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;    /* Vertical Center */
+            justify-content: center; /* Horizontal Center */
             overflow: hidden;
+        }
+
+        /* Main Wrapper jo screen ke beech mein rahega */
+        .player-card {
+            width: 100%;
+            max-width: 500px;
             display: flex;
             flex-direction: column;
+            background: #fff;
         }
 
-        /* HEADER - Looks like a real App Bar */
-        .app-header {
-            height: 56px;
+        /* Video Area */
+        .video-box {
+            width: 100%;
             background: #000;
-            display: flex;
-            align-items: center;
-            padding: 0 15px;
-            color: #fff;
-            gap: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        .app-header i { font-size: 1.2rem; cursor: pointer; color: #ff9900; }
-        .app-header span { font-weight: bold; font-size: 1.1rem; letter-spacing: 0.5px; }
-
-        /* VIDEO AREA - Perfectly Centered Black Box */
-        .video-section {
-            flex: 1; /* Takes all available space */
-            background: #000;
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
+            aspect-ratio: 16/9; /* Video ka standard ratio */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
         video {
             width: 100%;
-            max-height: 100%;
+            height: 100%;
             display: block;
-            outline: none;
         }
 
-        /* ACTION BUTTONS - Professional UI */
-        .action-footer {
-            background: #ffffff;
-            padding: 20px;
+        /* Buttons Row - Side by Side */
+        .button-container {
             display: flex;
-            gap: 15px;
-            border-top: 1px solid #eee;
+            padding: 20px;
+            gap: 12px;
+            width: 100%;
         }
 
         .btn {
             flex: 1;
-            height: 52px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            border-radius: 12px;
+            gap: 8px;
+            border-radius: 10px;
             text-decoration: none;
-            font-weight: 700;
-            font-size: 0.95rem;
+            font-weight: bold;
+            font-size: 0.9rem;
             border: none;
             cursor: pointer;
             transition: 0.2s;
         }
 
-        .btn-sh { background: #f0f2f5; color: #1c1e21; border: 1px solid #ddd; }
-        .btn-dl { background: #1f80e0; color: #fff; box-shadow: 0 4px 12px rgba(31,128,224,0.3); }
-        .btn:active { transform: scale(0.96); }
+        .btn-share { background: #f0f2f5; color: #1c1e21; border: 1px solid #ddd; }
+        .btn-download { background: #007bff; color: #fff; box-shadow: 0 4px 10px rgba(0,123,255,0.2); }
+        .btn:active { transform: scale(0.95); }
 
-        /* NATIVE LOADER */
+        /* Loader */
         #loader {
             position: absolute;
-            width: 45px; height: 45px;
-            border: 4px solid rgba(255,255,255,0.1);
-            border-top: 4px solid #1f80e0;
+            width: 35px; height: 35px;
+            border: 3px solid rgba(255,255,255,0.2);
+            border-top: 3px solid #007bff;
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            z-index: 5;
+            animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <!-- Header Bar -->
-    <div class="app-header">
-        <i class="fas fa-chevron-left" onclick="window.history.back()"></i>
-        <span>VIP SECURE PLAYER</span>
-    </div>
+    <div class="player-card">
+        <!-- Center Player -->
+        <div class="video-box">
+            <div id="loader"></div>
+            <video id="vPlayer" controls playsinline poster="" onplaying="document.getElementById('loader').style.display='none'">
+                <source id="vSource" src="" type="video/mp4">
+            </video>
+        </div>
 
-    <!-- Video Container -->
-    <div class="video-section">
-        <div id="loader"></div>
-        <video id="vPlayer" controls playsinline poster="" onplaying="document.getElementById('loader').style.display='none'">
-            <source id="vSource" src="" type="video/mp4">
-        </video>
-    </div>
-
-    <!-- Buttons -->
-    <div class="action-footer">
-        <button class="btn btn-sh" onclick="nativeShare()">
-            <i class="fas fa-share-alt"></i> SHARE
-        </button>
-        
-        <a id="dlLink" href="#" class="btn btn-dl">
-            <i class="fas fa-cloud-download-alt"></i> DOWNLOAD
-        </a>
+        <!-- Single Line Buttons -->
+        <div class="button-container">
+            <button class="btn btn-share" onclick="shareNow()">
+                <i class="fas fa-share-alt"></i> SHARE
+            </button>
+            
+            <a id="dlLink" href="#" class="btn btn-download">
+                <i class="fas fa-download"></i> DOWNLOAD
+            </a>
+        </div>
     </div>
 
     <script>
-        // SMART URL PARSING
         const params = new URLSearchParams(window.location.search);
         let v = params.get('v'); 
         let p = params.get('p'); 
 
-        const player = document.getElementById('vPlayer');
-        const source = document.getElementById('vSource');
+        const vPlayer = document.getElementById('vPlayer');
+        const vSource = document.getElementById('vSource');
         const dlLink = document.getElementById('dlLink');
 
         if(v) {
             v = decodeURIComponent(v);
-            let finalUrl = v;
+            let final = v;
 
-            // Auto-Convert to Direct Stream
             if(v.includes('dropbox.com')) {
-                finalUrl = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
+                final = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
             }
             if(v.includes('pixeldrain.com/u/')) {
-                finalUrl = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
+                final = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
             }
 
-            source.src = finalUrl;
-            dlLink.href = finalUrl;
-            player.load();
+            vSource.src = final;
+            dlLink.href = final;
+            vPlayer.load();
         }
 
-        if(p) player.poster = decodeURIComponent(p);
+        if(p) vPlayer.poster = decodeURIComponent(p);
 
-        // Native Sharing Logic
-        function nativeShare() {
+        function shareNow() {
             const url = window.location.href;
             if (navigator.share) {
-                navigator.share({ title: 'Exclusive Video', url: url });
+                navigator.share({ title: 'VIP Video', url: url });
             } else {
-                const tmp = document.createElement('textarea');
-                tmp.value = url;
-                document.body.appendChild(tmp);
-                tmp.select();
+                const t = document.createElement('textarea');
+                t.value = url;
+                document.body.appendChild(t);
+                t.select();
                 document.execCommand('copy');
-                document.body.removeChild(tmp);
-                alert("Link copied!");
+                document.body.removeChild(t);
+                alert("Link Copied!");
             }
         }
     </script>
