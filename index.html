@@ -4,116 +4,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="referrer" content="no-referrer">
-    <title>VIP STREAMING</title>
-    <!-- Icons Support -->
+    <title>VIP PLAYER</title>
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* BASE STYLES */
         * { box-sizing: border-box; }
         body, html { 
-            margin: 0; 
-            padding: 0; 
+            margin: 0; padding: 0; 
             width: 100%; 
-            height: 100%; 
-            background: #ffffff; /* White Background */
-            color: #000; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            background: #ffffff; /* Poora background white */
+            font-family: sans-serif;
         }
 
-        /* VIDEO AREA */
-        .player-con {
+        /* Video Container - No fixed height to avoid overlap */
+        .video-box {
             width: 100%;
-            background: #000; /* Video black background par hi achi lagti hai */
+            background: #000;
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            min-height: 200px;
         }
 
         video {
             width: 100%;
-            height: auto;
-            max-height: 70vh;
+            max-height: 60vh; /* Screen height ka 60% max */
             display: block;
-            outline: none;
+            background: #000;
         }
 
-        /* BUTTON GROUP (SIDE BY SIDE) */
-        .btn-group {
-            display: flex;
-            width: 100%;
+        /* Buttons Container */
+        .controls-area {
             padding: 20px;
-            gap: 12px; /* Gaps between buttons */
+            background: #ffffff;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
             justify-content: center;
         }
 
-        .action-btn {
-            flex: 1; /* Dono buttons barabar size ke honge */
+        .btn {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 15px 10px;
-            border-radius: 10px;
+            padding: 14px 5px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: bold;
             font-size: 0.9rem;
-            cursor: pointer;
-            transition: 0.3s;
             border: none;
-            outline: none;
+            cursor: pointer;
         }
 
-        /* SHARE BUTTON STYLE */
-        .btn-share {
-            background: #f0f2f5;
-            color: #1c1e21;
-            border: 1px solid #ddd;
-        }
-        .btn-share:active { background: #e4e6eb; }
+        /* Share Button (Grayish) */
+        .btn-sh { background: #f1f2f6; color: #333; border: 1px solid #ddd; }
+        
+        /* Download Button (Blue) */
+        .btn-dl { background: #007bff; color: #fff; box-shadow: 0 4px 10px rgba(0,123,255,0.2); }
 
-        /* DOWNLOAD BUTTON STYLE */
-        .btn-download {
-            background: #1f80e0; /* JioHotstar Blue */
-            color: #ffffff;
-            box-shadow: 0 4px 10px rgba(31,128,224,0.3);
-        }
-        .btn-download:active { background: #1668b8; }
-
-        /* LOADER */
         #loader {
             position: absolute;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #1f80e0;
+            width: 40px; height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
             animation: spin 1s linear infinite;
+            z-index: 10;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div class="player-con">
+    <div class="video-box">
         <div id="loader"></div>
         <video id="vPlayer" controls playsinline poster="" onplaying="document.getElementById('loader').style.display='none'">
             <source id="vSource" src="" type="video/mp4">
         </video>
     </div>
 
-    <!-- BUTTONS IN ONE LINE -->
-    <div class="btn-group">
-        <button class="action-btn btn-share" onclick="shareMe()">
-            <i class="fas fa-share-alt"></i> SHARE
-        </button>
-        
-        <a id="dlBtn" href="#" class="action-btn btn-download">
-            <i class="fas fa-download"></i> DOWNLOAD
-        </a>
+    <div class="controls-area">
+        <div class="btn-row">
+            <!-- SHARE -->
+            <button class="btn btn-sh" onclick="shareVideo()">
+                <i class="fas fa-share-alt"></i> SHARE
+            </button>
+            
+            <!-- DOWNLOAD -->
+            <a id="downloadLink" href="#" class="btn btn-dl">
+                <i class="fas fa-download"></i> DOWNLOAD
+            </a>
+        </div>
     </div>
 
     <script>
@@ -123,48 +109,38 @@
 
         const player = document.getElementById('vPlayer');
         const source = document.getElementById('vSource');
-        const dlBtn = document.getElementById('dlBtn');
+        const dlBtn = document.getElementById('downloadLink');
 
         if(v) {
             v = decodeURIComponent(v);
-            let rawLink = v;
+            let finalLink = v;
 
-            // Dropbox Fix
             if(v.includes('dropbox.com')) {
-                rawLink = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').split('?')[0] + '?raw=1';
+                finalLink = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
             }
-            // Pixeldrain Fix
             if(v.includes('pixeldrain.com/u/')) {
-                rawLink = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
+                finalLink = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
             }
 
-            source.src = rawLink;
-            // Download button ko direct link par bhejna
-            dlBtn.href = rawLink;
+            source.src = finalLink;
+            dlBtn.href = finalLink;
             player.load();
         }
 
         if(p) player.poster = decodeURIComponent(p);
 
-        // SHARE FUNCTION (Copies current GitHub Link)
-        function shareMe() {
-            const shareData = {
-                title: 'Watch VIP Video',
-                text: 'Check out this HD video without ads!',
-                url: window.location.href
-            };
-
+        function shareVideo() {
+            const url = window.location.href;
             if (navigator.share) {
-                navigator.share(shareData);
+                navigator.share({ title: 'VIP Video', url: url });
             } else {
-                // Fallback: Copy Link
                 const el = document.createElement('textarea');
-                el.value = window.location.href;
+                el.value = url;
                 document.body.appendChild(el);
                 el.select();
                 document.execCommand('copy');
                 document.body.removeChild(el);
-                alert("Link Copied to Clipboard!");
+                alert("Link Copied!");
             }
         }
     </script>
