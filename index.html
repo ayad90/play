@@ -1,181 +1,128 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-    <script id="kq7w2p">
-(function() {
-  var lastAdTime = localStorage.getItem("lastAdTime");
-  var currentTime = new Date().getTime();
-
-  // 1 hour = 3600000 ms
-  if (!lastAdTime || (currentTime - lastAdTime) > 3600000) {
-
-    // Montag Ad Script
-    (function(s){
-      s.dataset.zone='10791269',
-      s.src='https://nap5k.com/tag.min.js'
-    })([document.documentElement, document.body]
-      .filter(Boolean)
-      .pop()
-      .appendChild(document.createElement('script'))
-    );
-
-    // Save time
-    localStorage.setItem("lastAdTime", currentTime);
-  }
-})();
-    </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="referrer" content="no-referrer">
-    <title>VIP PLAYER</title>
-    <!-- Icons Support -->
+    <title>VIP ACCESS | Premium Streaming</title>
+    
+    <!-- 1. YOUR OFFICIAL MONETAG SDK TAG -->
+    <script src='//libtl.com/sdk.js' data-zone='10883203' data-sdk='show_10883203'></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root { --bg: #030b17; --primary: #1f80e0; --gold: #ffcc00; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body, html { margin: 0; padding: 0; background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; height: 100%; overflow-x: hidden; }
         
-        /* Poori screen ko safed aur center karne ke liye */
-        body, html { 
-            margin: 0; padding: 0; 
-            width: 100%; height: 100%; 
-            background: #ffffff; /* Background White */
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            align-items: center;    /* Vertical Center */
-            justify-content: center; /* Horizontal Center */
-            overflow: hidden;
-        }
+        /* AD SLOTS */
+        .ad-stack { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 0; background: #000; }
+        .ad-unit { width: 320px; height: 50px; background: #050505; display: flex; justify-content: center; align-items: center; border: 1px solid #111; }
 
-        /* Main Wrapper jo screen ke beech mein rahega */
-        .player-card {
-            width: 100%;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            background: #fff;
-        }
+        /* PLAYER WRAPPER */
+        #player-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; border-top: 1px solid #222; border-bottom: 1px solid #222; overflow: hidden; }
+        #player-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        iframe, video { width: 100%; height: 100%; border: none; display: none; }
 
-        /* Video Area */
-        .video-box {
-            width: 100%;
-            background: #000;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            aspect-ratio: 16/9; /* Video ka standard ratio */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        /* CONTENT INFO */
+        .content-area { padding: 25px 20px; text-align: center; background: #030b17; }
+        .v-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 20px; color: #eee; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* PREMIUM BUTTONS */
+        .action-btn { 
+            width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: 800; 
+            font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; 
+            justify-content: center; gap: 12px; transition: 0.3s; margin-bottom: 15px;
+            background: var(--primary); color: #fff; box-shadow: 0 8px 25px rgba(31,128,224,0.3);
         }
+        .action-btn:active { transform: scale(0.96); }
+        .btn-gold { background: var(--gold); color: #000; box-shadow: 0 8px 25px rgba(255,204,0,0.2); }
 
-        video {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        /* Buttons Row - Side by Side */
-        .button-container {
-            display: flex;
-            padding: 20px;
-            gap: 12px;
-            width: 100%;
-        }
-
-        .btn {
-            flex: 1;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.9rem;
-            border: none;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-share { background: #f0f2f5; color: #1c1e21; border: 1px solid #ddd; }
-        .btn-download { background: #007bff; color: #fff; box-shadow: 0 4px 10px rgba(0,123,255,0.2); }
-        .btn:active { transform: scale(0.95); }
-
-        /* Loader */
-        #loader {
-            position: absolute;
-            width: 35px; height: 35px;
-            border: 3px solid rgba(255,255,255,0.2);
-            border-top: 3px solid #007bff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loader { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
     </style>
 </head>
 <body>
 
-    <div class="player-card">
-        <!-- Center Player -->
-        <div class="video-box">
-            <div id="loader"></div>
-            <video id="vPlayer" controls playsinline poster="" onplaying="document.getElementById('loader').style.display='none'">
-                <source id="vSource" src="" type="video/mp4">
-            </video>
-        </div>
+    <!-- Top Adsterra -->
+    <div class="ad-stack">
+        <div class="ad-unit"><script type="text/javascript">atOptions={'key':'47a243b5b57a4107b0bfa58be36d1997','format':'iframe','height':50,'width':320};</script><script type="text/javascript" src="https://www.highperformanceformat.com/47a243b5b57a4107b0bfa58be36d1997/invoke.js"></script></div>
+    </div>
 
-        <!-- Single Line Buttons -->
-        <div class="button-container">
-            <button class="btn btn-share" onclick="shareNow()">
-                <i class="fas fa-share-alt"></i> SHARE
-            </button>
-            
-            <a id="dlLink" href="#" class="btn btn-download">
-                <i class="fas fa-download"></i> DOWNLOAD
-            </a>
+    <!-- Player / Poster Area -->
+    <div id="player-wrapper">
+        <div id="loader" class="loader">
+            <i class="fas fa-circle-notch fa-spin" style="font-size: 2.5rem; color: var(--primary);"></i>
+            <p style="margin-top: 15px; font-weight: bold; letter-spacing: 1px;">PREPARING HD STREAM...</p>
         </div>
+        <img id="vPoster" src="">
+        <div id="video-container" style="width:100%; height:100%;"></div>
+    </div>
+
+    <!-- Main Buttons -->
+    <div class="content-area">
+        <div id="vTitle" class="v-title">VIP VIDEO</div>
+        
+        <button id="playBtn" class="action-btn" onclick="triggerMoneTagAd()">
+            <i class="fas fa-play-circle"></i> WATCH FULL HD
+        </button>
+
+        <a id="dlBtn" href="https://www.effectivegatecpm.com/vwizjp7s?key=82eaaf585ed86a0767368d003252b739" class="action-btn btn-gold">
+            <i class="fas fa-download"></i> DOWNLOAD NOW
+        </a>
+    </div>
+
+    <!-- Bottom Adsterra -->
+    <div class="ad-stack">
+        <div class="ad-unit"><script type="text/javascript">atOptions={'key':'47a243b5b57a4107b0bfa58be36d1997','format':'iframe','height':50,'width':320};</script><script type="text/javascript" src="https://www.highperformanceformat.com/47a243b5b57a4107b0bfa58be36d1997/invoke.js"></script></div>
     </div>
 
     <script>
-        const params = new URLSearchParams(window.location.search);
-        let v = params.get('v'); 
-        let p = params.get('p'); 
+        // Getting parameters from Admin Panel
+        const urlParams = new URLSearchParams(window.location.search);
+        let vUrl = decodeURIComponent(urlParams.get('v') || '');
+        let pUrl = decodeURIComponent(urlParams.get('p') || '');
+        let vTitle = decodeURIComponent(urlParams.get('t') || 'PREMIUM VIDEO');
 
-        const vPlayer = document.getElementById('vPlayer');
-        const vSource = document.getElementById('vSource');
-        const dlLink = document.getElementById('dlLink');
+        document.getElementById('vPoster').src = pUrl || 'https://i.ibb.co/L6V2Sny/placeholder.png';
+        document.getElementById('vTitle').innerText = vTitle;
 
-        if(v) {
-            v = decodeURIComponent(v);
-            let final = v;
-
-            if(v.includes('dropbox.com')) {
-                final = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
+        // --- MONETAG REWARDED INTERSTITIAL LOGIC ---
+        function triggerMoneTagAd() {
+            document.getElementById('loader').style.display = 'flex';
+            
+            // Checking if your specific SDK function exists
+            if (typeof show_10883203 === 'function') {
+                show_10883203().then(() => {
+                    // This runs AFTER user watches/clicks the ad
+                    startActualVideo();
+                }).catch((e) => {
+                    // Fail-safe: if ad fails, still let them watch
+                    console.log("Ad skipped or failed", e);
+                    startActualVideo();
+                });
+            } else {
+                // If SDK not loaded
+                startActualVideo();
             }
-            if(v.includes('pixeldrain.com/u/')) {
-                final = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
-            }
-
-            vSource.src = final;
-            dlLink.href = final;
-            vPlayer.load();
         }
 
-        if(p) vPlayer.poster = decodeURIComponent(p);
+        function startActualVideo() {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('vPoster').style.display = 'none';
+            document.getElementById('playBtn').style.display = 'none';
+            
+            const container = document.getElementById('video-container');
+            
+            // Auto-fix for common servers
+            if(vUrl.includes('dropbox.com')) vUrl = vUrl.replace('www.dropbox.com', 'dl.dropboxusercontent.com').split('?')[0] + '?raw=1';
+            if(vUrl.includes('pixeldrain.com/u/')) vUrl = 'https://pixeldrain.com/api/file/' + vUrl.split('/').pop();
 
-        function shareNow() {
-            const url = window.location.href;
-            if (navigator.share) {
-                navigator.share({ title: 'VIP Video', url: url });
+            if(vUrl.includes('.mp4') || vUrl.includes('dropbox') || vUrl.includes('pixeldrain')) {
+                container.innerHTML = `<video controls autoplay style="width:100%; height:100%; display:block;"><source src="${vUrl}" type="video/mp4"></video>`;
             } else {
-                const t = document.createElement('textarea');
-                t.value = url;
-                document.body.appendChild(t);
-                t.select();
-                document.execCommand('copy');
-                document.body.removeChild(t);
-                alert("Link Copied!");
+                // For Lulu, Filemoon, etc.
+                let embed = vUrl.replace('/f/', '/e/').replace('/d/', '/e/').replace('/v/', '/e/');
+                container.innerHTML = `<iframe src="${embed}" style="width:100%; height:100%; display:block;" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
             }
         }
     </script>
