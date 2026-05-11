@@ -3,129 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VIP STREAMING</title>
+    <meta name="referrer" content="no-referrer">
+    <title>VIP SECURE PLAYER</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* 1. SIMPLE WHITE BACKGROUND & CENTERED VIDEO */
-        body, html { 
-            margin: 0; padding: 0; 
-            background: #ffffff; /* White background */
-            height: 100vh; width: 100vw; 
-            display: flex; align-items: center; justify-content: center; 
-            font-family: sans-serif; overflow: hidden;
-        }
+        body, html { margin:0; padding:0; background:#000; height:100vh; width:100vw; overflow:hidden; font-family: sans-serif; display: flex; align-items: center; justify-content: center; }
+        
+        /* 1. PLAYER CENTERED, NO ADS */
+        .video-container { width:100%; max-width: 100%; position:relative; display: flex; align-items: center; justify-content: center; }
+        video { width:100%; height:auto; max-height:100vh; display:block; outline:none; background:#000; }
 
-        #main-container { width: 100%; text-align: center; }
+        /* 2. INTERSTITIAL POP WEBVIEW */
+        #ad-overlay { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column; }
+        #ad-frame { flex: 1; border: none; width: 100%; height: 100%; background: #000; }
+        
+        /* 5 SECOND SKIP BUTTON */
+        .skip-container { position: absolute; top: 20px; right: 20px; z-index: 10000; }
+        .btn-skip { background: rgba(255,255,255,0.2); color: #fff; padding: 10px 20px; border-radius: 30px; border: 1px solid #fff; font-size: 0.9rem; font-weight: bold; cursor: pointer; backdrop-filter: blur(10px); display: none; }
+        .timer-txt { color: #fff; background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 30px; font-size: 0.9rem; }
 
-        video { 
-            width: 100%; max-height: 80vh; 
-            background: #000; display: block; outline: none; 
-        }
-
-        /* 2. INTERSTITIAL POPUP STYLING */
-        #ad-overlay {
-            position: fixed; inset: 0; 
-            background: #000; z-index: 99999; 
-            display: none; flex-direction: column;
-        }
-        #ad-frame { flex: 1; border: none; width: 100%; height: 100%; }
-
-        .ad-header {
-            position: absolute; top: 10px; right: 10px;
-            display: flex; align-items: center; gap: 10px; z-index: 100000;
-        }
-
-        #close-btn {
-            width: 40px; height: 40px; 
-            background: rgba(255,255,255,0.2); 
-            color: #fff; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; cursor: pointer;
-            visibility: hidden; /* Hidden for 5 seconds */
-            border: 1px solid #fff;
-        }
-
-        #timer-box {
-            background: rgba(0,0,0,0.6); color: #fff;
-            padding: 5px 12px; border-radius: 20px; font-size: 0.8rem;
-        }
-
-        /* Click Layer to catch first touch */
-        #click-layer { position: fixed; inset: 0; z-index: 50; cursor: pointer; }
+        /* CLICK LAYER */
+        #click-layer { position: fixed; inset: 0; z-index: 5000; background: transparent; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <!-- Catch first click -->
+    <!-- Transparent layer to catch first click -->
     <div id="click-layer" onclick="triggerAd()"></div>
 
-    <div id="main-container">
+    <!-- The Player -->
+    <div class="video-container">
         <video id="vPlayer" controls playsinline poster="">
             <source id="vSource" src="" type="video/mp4">
         </video>
     </div>
 
-    <!-- Interstitial Ad Overlay -->
+    <!-- Interstitial Ad Overlay (Ghost Mode) -->
     <div id="ad-overlay">
-        <div class="ad-header">
-            <div id="timer-box">Wait <span id="sec">5</span>s</div>
-            <div id="close-btn" onclick="closeAd()"><i class="fas fa-times"></i></div>
+        <div class="skip-container">
+            <div id="timer-box" class="timer-txt">Ad ends in <span id="count">5</span>s</div>
+            <button id="skip-btn" class="btn-skip" onclick="closeAd()">SKIP AD &times;</button>
         </div>
         <iframe id="ad-frame" src=""></iframe>
     </div>
 
     <script>
-        // --- CONFIGURATION ---
-        const DIRECT_LINK = "https://omg10.com/4/10700966";
-
-        // Load Video Data
-        const params = new URLSearchParams(window.location.search);
-        let v = params.get('v'); 
-        let p = params.get('p'); 
+        const urlParams = new URLSearchParams(window.location.search);
+        let v = urlParams.get('v'); 
+        let p = urlParams.get('p'); 
+        
+        // --- 3. DIRECT LINK CONFIGURATION ---
+        const directLink = "https://www.effectivegatecpm.com/vwizjp7s?key=82eaaf585ed86a0767368d003252b739";
 
         const player = document.getElementById('vPlayer');
+        const source = document.getElementById('vSource');
+        const overlay = document.getElementById('ad-overlay');
+        const clickLayer = document.getElementById('click-layer');
+
         if(v) {
             v = decodeURIComponent(v);
-            if(v.includes('dropbox.com')) v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').split('?')[0] + '?raw=1';
-            document.getElementById('vSource').src = v;
-            player.load();
+            if(v.includes('dropbox.com')) v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
+            if(v.includes('pixeldrain.com/u/')) v = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
+            source.src = v;
         }
         if(p) player.poster = decodeURIComponent(p);
+        player.load();
 
-        // --- AD LOGIC ---
-        let adShowed = false;
-
+        // AD LOGIC
+        let adServed = false;
         function triggerAd() {
-            if(adShowed) return;
+            if(adServed) return;
+            adServed = true;
             
-            const overlay = document.getElementById('ad-overlay');
-            const frame = document.getElementById('ad-frame');
-            const timerBox = document.getElementById('timer-box');
-            const closeBtn = document.getElementById('close-btn');
-            const secSpan = document.getElementById('sec');
+            // Show Overlay
+            overlay.style.display = "flex";
+            document.getElementById('ad-frame').src = directLink;
+            clickLayer.style.display = "none";
 
-            overlay.style.display = 'flex';
-            frame.src = DIRECT_LINK;
-            adShowed = true;
-            document.getElementById('click-layer').style.display = 'none';
-
-            // Start 5 second countdown
-            let count = 5;
+            // Start 5s Timer
+            let timeLeft = 5;
             const timer = setInterval(() => {
-                count--;
-                secSpan.innerText = count;
-                if(count <= 0) {
+                timeLeft--;
+                document.getElementById('count').innerText = timeLeft;
+                if(timeLeft <= 0) {
                     clearInterval(timer);
-                    timerBox.style.display = 'none';
-                    closeBtn.style.setProperty('visibility', 'visible');
+                    document.getElementById('timer-box').style.display = "none";
+                    document.getElementById('skip-btn').style.display = "block";
                 }
             }, 1000);
         }
 
         function closeAd() {
-            document.getElementById('ad-overlay').style.display = 'none';
+            overlay.style.display = "none";
             document.getElementById('ad-frame').src = "";
-            player.play(); // Auto play video after ad
+            player.play(); // Auto play video after skip
         }
     </script>
 </body>
