@@ -2,121 +2,130 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- Image Referrer Fix -->
-    <meta name="referrer" content="no-referrer">
-    <title>VIP PREMIUM PLAYER</title>
-    
-    <!-- 1. OFFICIAL MONETAG SDK -->
-    <script src='//libtl.com/sdk.js' data-zone='10883203' data-sdk='show_10883203'></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VIP STREAMING</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #030b17; --primary: #1f80e0; --gold: #ffcc00; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body, html { margin: 0; padding: 0; background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; height: 100%; overflow-x: hidden; }
-        
-        .ad-stack { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 0; background: #000; }
-        .ad-unit { width: 320px; height: 50px; background: #050505; display: flex; justify-content: center; align-items: center; border: 1px solid #111; }
-
-        /* PLAYER WRAPPER */
-        #player-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; border-top: 1px solid #222; border-bottom: 1px solid #222; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        #vPoster { width: 100%; height: 100%; object-fit: cover; position: absolute; z-index: 1; }
-        #video-container { width: 100%; height: 100%; z-index: 2; display: none; }
-        video, iframe { width: 100%; height: 100%; border: none; }
-
-        .content-area { padding: 25px 20px; text-align: center; background: #030b17; }
-        .v-title { font-size: 1rem; font-weight: bold; margin-bottom: 20px; color: #eee; text-transform: uppercase; }
-        
-        .action-btn { 
-            width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: 800; 
-            font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; 
-            justify-content: center; gap: 12px; transition: 0.3s; margin-bottom: 15px;
-            background: var(--primary); color: #fff; box-shadow: 0 8px 25px rgba(31,128,224,0.3);
+        /* 1. SIMPLE WHITE BACKGROUND & CENTERED VIDEO */
+        body, html { 
+            margin: 0; padding: 0; 
+            background: #ffffff; /* White background */
+            height: 100vh; width: 100vw; 
+            display: flex; align-items: center; justify-content: center; 
+            font-family: sans-serif; overflow: hidden;
         }
-        .btn-gold { background: var(--gold); color: #000; }
 
-        .loader { position: absolute; inset: 0; background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
+        #main-container { width: 100%; text-align: center; }
+
+        video { 
+            width: 100%; max-height: 80vh; 
+            background: #000; display: block; outline: none; 
+        }
+
+        /* 2. INTERSTITIAL POPUP STYLING */
+        #ad-overlay {
+            position: fixed; inset: 0; 
+            background: #000; z-index: 99999; 
+            display: none; flex-direction: column;
+        }
+        #ad-frame { flex: 1; border: none; width: 100%; height: 100%; }
+
+        .ad-header {
+            position: absolute; top: 10px; right: 10px;
+            display: flex; align-items: center; gap: 10px; z-index: 100000;
+        }
+
+        #close-btn {
+            width: 40px; height: 40px; 
+            background: rgba(255,255,255,0.2); 
+            color: #fff; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; cursor: pointer;
+            visibility: hidden; /* Hidden for 5 seconds */
+            border: 1px solid #fff;
+        }
+
+        #timer-box {
+            background: rgba(0,0,0,0.6); color: #fff;
+            padding: 5px 12px; border-radius: 20px; font-size: 0.8rem;
+        }
+
+        /* Click Layer to catch first touch */
+        #click-layer { position: fixed; inset: 0; z-index: 50; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="ad-stack">
-        <div class="ad-unit"><script type="text/javascript">atOptions={'key':'47a243b5b57a4107b0bfa58be36d1997','format':'iframe','height':50,'width':320};</script><script type="text/javascript" src="https://www.highperformanceformat.com/47a243b5b57a4107b0bfa58be36d1997/invoke.js"></script></div>
+    <!-- Catch first click -->
+    <div id="click-layer" onclick="triggerAd()"></div>
+
+    <div id="main-container">
+        <video id="vPlayer" controls playsinline poster="">
+            <source id="vSource" src="" type="video/mp4">
+        </video>
     </div>
 
-    <div id="player-wrapper">
-        <div id="loader" class="loader">
-            <i class="fas fa-circle-notch fa-spin" style="font-size: 2.5rem; color: var(--primary);"></i>
-            <p style="margin-top: 15px; font-weight: bold;">LOADING SECURE STREAM...</p>
+    <!-- Interstitial Ad Overlay -->
+    <div id="ad-overlay">
+        <div class="ad-header">
+            <div id="timer-box">Wait <span id="sec">5</span>s</div>
+            <div id="close-btn" onclick="closeAd()"><i class="fas fa-times"></i></div>
         </div>
-        <img id="vPoster" src="https://i.ibb.co/L6V2Sny/placeholder.png">
-        <div id="video-container"></div>
-    </div>
-
-    <div class="content-area">
-        <div id="vTitle" class="v-title">VIP PREMIUM VIDEO</div>
-        
-        <button id="playBtn" class="action-btn" onclick="triggerAd()">
-            <i class="fas fa-play-circle"></i> WATCH FULL HD
-        </button>
-
-        <a id="dlBtn" href="https://www.effectivegatecpm.com/vwizjp7s?key=82eaaf585ed86a0767368d003252b739" class="action-btn btn-gold">
-            <i class="fas fa-download"></i> DOWNLOAD NOW
-        </a>
-    </div>
-
-    <div class="ad-stack">
-        <div class="ad-unit"><script type="text/javascript">atOptions={'key':'47a243b5b57a4107b0bfa58be36d1997','format':'iframe','height':50,'width':320};</script><script type="text/javascript" src="https://www.highperformanceformat.com/47a243b5b57a4107b0bfa58be36d1997/invoke.js"></script></div>
+        <iframe id="ad-frame" src=""></iframe>
     </div>
 
     <script>
-        const params = new URLSearchParams(window.location.search);
-        let v = params.get('v') ? decodeURIComponent(params.get('v')) : "";
-        let p = params.get('p') ? decodeURIComponent(params.get('p')) : "";
-        let t = params.get('t') ? decodeURIComponent(params.get('t')) : "PREMIUM VIDEO";
+        // --- CONFIGURATION ---
+        const DIRECT_LINK = "https://omg10.com/4/10700966";
 
-        if(p) document.getElementById('vPoster').src = p;
-        document.getElementById('vTitle').innerText = t;
+        // Load Video Data
+        const params = new URLSearchParams(window.location.search);
+        let v = params.get('v'); 
+        let p = params.get('p'); 
+
+        const player = document.getElementById('vPlayer');
+        if(v) {
+            v = decodeURIComponent(v);
+            if(v.includes('dropbox.com')) v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').split('?')[0] + '?raw=1';
+            document.getElementById('vSource').src = v;
+            player.load();
+        }
+        if(p) player.poster = decodeURIComponent(p);
+
+        // --- AD LOGIC ---
+        let adShowed = false;
 
         function triggerAd() {
-            document.getElementById('loader').style.display = 'flex';
+            if(adShowed) return;
             
-            // Check if show_10883203 exists (MoneTag)
-            if (typeof show_10883203 === 'function') {
-                show_10883203().then(() => {
-                    playVideo();
-                }).catch(() => {
-                    playVideo(); // Play even if ad fails
-                });
-            } else {
-                playVideo(); // Play if SDK not found
-            }
+            const overlay = document.getElementById('ad-overlay');
+            const frame = document.getElementById('ad-frame');
+            const timerBox = document.getElementById('timer-box');
+            const closeBtn = document.getElementById('close-btn');
+            const secSpan = document.getElementById('sec');
+
+            overlay.style.display = 'flex';
+            frame.src = DIRECT_LINK;
+            adShowed = true;
+            document.getElementById('click-layer').style.display = 'none';
+
+            // Start 5 second countdown
+            let count = 5;
+            const timer = setInterval(() => {
+                count--;
+                secSpan.innerText = count;
+                if(count <= 0) {
+                    clearInterval(timer);
+                    timerBox.style.display = 'none';
+                    closeBtn.style.setProperty('visibility', 'visible');
+                }
+            }, 1000);
         }
 
-        function playVideo() {
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('vPoster').style.display = 'none';
-            document.getElementById('playBtn').style.display = 'none';
-            const container = document.getElementById('video-container');
-            container.style.display = 'block';
-
-            // Dropbox Logic Fix
-            if(v.includes('dropbox.com')) {
-                v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
-            }
-            // Pixeldrain Fix
-            if(v.includes('pixeldrain.com/u/')) {
-                v = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
-            }
-
-            if(v.includes('.mp4') || v.includes('dropbox') || v.includes('pixeldrain')) {
-                container.innerHTML = `<video controls autoplay playsinline style="width:100%; height:100%;"><source src="${v}" type="video/mp4"></video>`;
-            } else {
-                // For other embeds like Filemoon, Lulu, etc.
-                let embed = v.replace('/f/', '/e/').replace('/d/', '/e/').replace('/v/', '/e/');
-                container.innerHTML = `<iframe src="${embed}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
-            }
+        function closeAd() {
+            document.getElementById('ad-overlay').style.display = 'none';
+            document.getElementById('ad-frame').src = "";
+            player.play(); // Auto play video after ad
         }
     </script>
 </body>
