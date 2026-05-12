@@ -8,37 +8,30 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body, html { margin:0; padding:0; background:#000; height:100vh; width:100vw; overflow:hidden; font-family: sans-serif; display: flex; align-items: center; justify-content: center; }
-        
-        /* 1. PLAYER CENTERED, NO ADS */
         .video-container { width:100%; max-width: 100%; position:relative; display: flex; align-items: center; justify-content: center; }
         video { width:100%; height:auto; max-height:100vh; display:block; outline:none; background:#000; }
 
-        /* 2. INTERSTITIAL POP WEBVIEW */
+        /* INTERSTITIAL POP */
         #ad-overlay { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column; }
         #ad-frame { flex: 1; border: none; width: 100%; height: 100%; background: #000; }
         
-        /* 5 SECOND SKIP BUTTON */
         .skip-container { position: absolute; top: 20px; right: 20px; z-index: 10000; }
-        .btn-skip { background: rgba(255,255,255,0.2); color: #fff; padding: 10px 20px; border-radius: 30px; border: 1px solid #fff; font-size: 0.9rem; font-weight: bold; cursor: pointer; backdrop-filter: blur(10px); display: none; }
-        .timer-txt { color: #fff; background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 30px; font-size: 0.9rem; }
+        .btn-skip { background: rgba(255,255,255,0.2); color: #fff; padding: 10px 20px; border-radius: 30px; border: 1px solid #fff; font-size: 0.8rem; font-weight: bold; cursor: pointer; backdrop-filter: blur(10px); display: none; }
+        .timer-txt { color: #fff; background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 30px; font-size: 0.8rem; }
 
-        /* CLICK LAYER */
         #click-layer { position: fixed; inset: 0; z-index: 5000; background: transparent; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <!-- Transparent layer to catch first click -->
     <div id="click-layer" onclick="triggerAd()"></div>
 
-    <!-- The Player -->
     <div class="video-container">
         <video id="vPlayer" controls playsinline poster="">
             <source id="vSource" src="" type="video/mp4">
         </video>
     </div>
 
-    <!-- Interstitial Ad Overlay (Ghost Mode) -->
     <div id="ad-overlay">
         <div class="skip-container">
             <div id="timer-box" class="timer-txt">Ad ends in <span id="count">5</span>s</div>
@@ -51,36 +44,38 @@
         const urlParams = new URLSearchParams(window.location.search);
         let v = urlParams.get('v'); 
         let p = urlParams.get('p'); 
-        
-        // --- 3. DIRECT LINK CONFIGURATION ---
-        const directLink = "https://omg10.com/4/10632629";
+        const directLink = "https://www.effectivegatecpm.com/vwizjp7s?key=82eaaf585ed86a0767368d003252b739";
 
         const player = document.getElementById('vPlayer');
-        const source = document.getElementById('vSource');
         const overlay = document.getElementById('ad-overlay');
-        const clickLayer = document.getElementById('click-layer');
 
         if(v) {
             v = decodeURIComponent(v);
             if(v.includes('dropbox.com')) v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
-            if(v.includes('pixeldrain.com/u/')) v = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
-            source.src = v;
+            document.getElementById('vSource').src = v;
         }
         if(p) player.poster = decodeURIComponent(p);
         player.load();
 
-        // AD LOGIC
+        // --- BACK BUTTON TRAP FOR AD ---
+        window.onpopstate = function() {
+            if(overlay.style.display === "flex") {
+                closeAd();
+            }
+        };
+
         let adServed = false;
         function triggerAd() {
             if(adServed) return;
             adServed = true;
             
-            // Show Overlay
+            // Push state so back button doesn't close the webview
+            history.pushState({ad: "active"}, "Ad");
+            
             overlay.style.display = "flex";
             document.getElementById('ad-frame').src = directLink;
-            clickLayer.style.display = "none";
+            document.getElementById('click-layer').style.display = "none";
 
-            // Start 5s Timer
             let timeLeft = 5;
             const timer = setInterval(() => {
                 timeLeft--;
@@ -96,8 +91,8 @@
         function closeAd() {
             overlay.style.display = "none";
             document.getElementById('ad-frame').src = "";
-            player.play(); // Auto play video after skip
+            player.play();
         }
     </script>
 </body>
-</html>
+    </html>
