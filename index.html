@@ -7,73 +7,116 @@
     <title>VIP SECURE PLAYER</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body, html { margin:0; padding:0; background:#000; height:100vh; width:100vw; overflow:hidden; font-family: sans-serif; display: flex; align-items: center; justify-content: center; }
-        .video-container { width:100%; max-width: 100%; position:relative; display: flex; align-items: center; justify-content: center; }
-        video { width:100%; height:auto; max-height:100vh; display:block; outline:none; background:#000; }
+        body, html { margin:0; padding:0; background:#000; height:100vh; width:100vw; overflow:hidden; font-family: 'Segoe UI', sans-serif; display: flex; align-items: center; justify-content: center; }
 
-        /* INTERSTITIAL POP */
-        #ad-overlay { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column; }
+        /* 1. MASTER BACK BUTTON - UNSTOPPABLE */
+        #master-exit-btn { 
+            position: fixed !important; 
+            top: 10px !important; 
+            left: 10px !important; 
+            width: 50px !important; 
+            height: 50px !important; 
+            background: #ff9900 !important; 
+            color: #000 !important; 
+            border-radius: 50% !important; 
+            display: flex !important; 
+            align-items: center !important; 
+            justify-content: center !important; 
+            z-index: 2147483647 !important; 
+            cursor: pointer !important; 
+            border: 3px solid #fff !important;
+            box-shadow: 0 0 20px rgba(255,153,0,0.8) !important;
+            font-size: 1.5rem !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        /* PLAYER AREA */
+        .video-container { width:100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #000; }
+        video, iframe { width:100%; height:100%; border: none; outline: none; }
+
+        /* AD OVERLAY */
+        #ad-overlay { position: fixed; inset: 0; background: #000; z-index: 2147483640; display: none; flex-direction: column; }
         #ad-frame { flex: 1; border: none; width: 100%; height: 100%; background: #000; }
         
-        .skip-container { position: absolute; top: 20px; right: 20px; z-index: 10000; }
-        .btn-skip { background: rgba(255,255,255,0.2); color: #fff; padding: 10px 20px; border-radius: 30px; border: 1px solid #fff; font-size: 0.8rem; font-weight: bold; cursor: pointer; backdrop-filter: blur(10px); display: none; }
-        .timer-txt { color: #fff; background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 30px; font-size: 0.8rem; }
+        /* SKIP TIMER UI */
+        .skip-container { position: absolute; top: 15px; right: 15px; z-index: 2147483645; }
+        .btn-skip { background: #fff; color: #000; padding: 10px 25px; border-radius: 30px; border: none; font-size: 0.9rem; font-weight: bold; cursor: pointer; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .timer-txt { color: #fff; background: rgba(0,0,0,0.8); padding: 10px 25px; border-radius: 30px; font-size: 0.9rem; border: 1px solid #ff9900; }
 
-        #click-layer { position: fixed; inset: 0; z-index: 5000; background: transparent; cursor: pointer; }
+        #click-layer { position: fixed; inset: 0; z-index: 1000000; background: transparent; }
     </style>
 </head>
 <body>
 
+    <div id="master-exit-btn" onclick="goBackNow()">
+        <i class="fas fa-arrow-left"></i>
+    </div>
+
     <div id="click-layer" onclick="triggerAd()"></div>
 
-    <div class="video-container">
-        <video id="vPlayer" controls playsinline poster="">
-            <source id="vSource" src="" type="video/mp4">
-        </video>
+    <div class="video-container" id="player-mount">
+        <!-- Player will be injected here -->
     </div>
 
     <div id="ad-overlay">
         <div class="skip-container">
             <div id="timer-box" class="timer-txt">Ad ends in <span id="count">5</span>s</div>
-            <button id="skip-btn" class="btn-skip" onclick="closeAd()">SKIP AD &times;</button>
+            <button id="skip-btn" class="btn-skip" onclick="closeAd()">SKIP & PLAY &times;</button>
         </div>
         <iframe id="ad-frame" src=""></iframe>
     </div>
 
     <script>
+        function goBackNow() { window.history.back(); }
+
+        // Anti-Ad-Cover Force
+        setInterval(() => {
+            const btn = document.getElementById('master-exit-btn');
+            if (btn) { btn.style.zIndex = "2147483647"; btn.style.display = "flex"; btn.style.visibility = "visible"; }
+        }, 500);
+
         const urlParams = new URLSearchParams(window.location.search);
         let v = urlParams.get('v'); 
         let p = urlParams.get('p'); 
-        const directLink = "https://www.effectivecpmnetwork.com/k3qy6yuz?key=a98fa5e79c2794e7b4a610ee9b269999";
-
-        const player = document.getElementById('vPlayer');
-        const overlay = document.getElementById('ad-overlay');
+        
+        const adLink = "https://www.effectivegatecpm.com/vwizjp7s?key=82eaaf585ed86a0767368d003252b739";
+        const mount = document.getElementById('player-mount');
 
         if(v) {
             v = decodeURIComponent(v);
-            if(v.includes('dropbox.com')) v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
-            document.getElementById('vSource').src = v;
-        }
-        if(p) player.poster = decodeURIComponent(p);
-        player.load();
+            let playerHtml = "";
 
-        // --- BACK BUTTON TRAP FOR AD ---
-        window.onpopstate = function() {
-            if(overlay.style.display === "flex") {
-                closeAd();
+            // 1. DROPBOX FIX
+            if(v.includes('dropbox.com')) {
+                v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
+                playerHtml = `<video id="mainV" controls playsinline poster="${p}"><source src="${v}" type="video/mp4"></video>`;
+            } 
+            // 2. PIXELDRAIN FIX
+            else if(v.includes('pixeldrain.com/u/')) {
+                v = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
+                playerHtml = `<video id="mainV" controls playsinline poster="${p}"><source src="${v}" type="video/mp4"></video>`;
             }
-        };
+            // 3. STREAMVAULTPRO & OTHER STREAM LINKS
+            else if(v.includes('streamvaultpro.cc') || v.includes('/stream/')) {
+                // StreamVault links usually work best in an iframe embed
+                playerHtml = `<iframe src="${v}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+            }
+            // 4. DEFAULT (OTHER SERVERS)
+            else {
+                playerHtml = `<iframe src="${v.replace('/f/', '/e/').replace('/d/', '/e/')}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+            }
 
+            mount.innerHTML = playerHtml;
+        }
+
+        // AD LOGIC
         let adServed = false;
         function triggerAd() {
             if(adServed) return;
             adServed = true;
-            
-            // Push state so back button doesn't close the webview
-            history.pushState({ad: "active"}, "Ad");
-            
-            overlay.style.display = "flex";
-            document.getElementById('ad-frame').src = directLink;
+            document.getElementById('ad-overlay').style.display = "flex";
+            document.getElementById('ad-frame').src = adLink;
             document.getElementById('click-layer').style.display = "none";
 
             let timeLeft = 5;
@@ -89,10 +132,11 @@
         }
 
         function closeAd() {
-            overlay.style.display = "none";
+            document.getElementById('ad-overlay').style.display = "none";
             document.getElementById('ad-frame').src = "";
-            player.play();
+            const vid = document.getElementById('mainV');
+            if(vid) vid.play();
         }
     </script>
 </body>
-    </html>
+</html>
