@@ -1,97 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+    <script id="kq7w2p">
+(function() {
+  var lastAdTime = localStorage.getItem("lastAdTime");
+  var currentTime = new Date().getTime();
+
+  // 1 hour = 3600000 ms
+  if (!lastAdTime || (currentTime - lastAdTime) > 3600000) {
+
+    // Montag Ad Script
+    (function(s){
+      s.dataset.zone='10791269',
+      s.src='https://nap5k.com/tag.min.js'
+    })([document.documentElement, document.body]
+      .filter(Boolean)
+      .pop()
+      .appendChild(document.createElement('script'))
+    );
+
+    // Save time
+    localStorage.setItem("lastAdTime", currentTime);
+  }
+})();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="referrer" content="no-referrer">
-    <title>VIP SECURE PLAYER</title>
+    <title>VIP PLAYER</title>
+    <!-- Icons Support -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body, html { margin:0; padding:0; background:#000; height:100vh; width:100vw; overflow:hidden; font-family: sans-serif; display: flex; align-items: center; justify-content: center; }
-        .video-container { width:100%; max-width: 100%; position:relative; display: flex; align-items: center; justify-content: center; }
-        video { width:100%; height:auto; max-height:100vh; display:block; outline:none; background:#000; }
-
-        /* INTERSTITIAL POP */
-        #ad-overlay { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column; }
-        #ad-frame { flex: 1; border: none; width: 100%; height: 100%; background: #000; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        .skip-container { position: absolute; top: 20px; right: 20px; z-index: 10000; }
-        .btn-skip { background: rgba(255,255,255,0.2); color: #fff; padding: 10px 20px; border-radius: 30px; border: 1px solid #fff; font-size: 0.8rem; font-weight: bold; cursor: pointer; backdrop-filter: blur(10px); display: none; }
-        .timer-txt { color: #fff; background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 30px; font-size: 0.8rem; }
+        /* Poori screen ko safed aur center karne ke liye */
+        body, html { 
+            margin: 0; padding: 0; 
+            width: 100%; height: 100%; 
+            background: #ffffff; /* Background White */
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;    /* Vertical Center */
+            justify-content: center; /* Horizontal Center */
+            overflow: hidden;
+        }
 
-        #click-layer { position: fixed; inset: 0; z-index: 5000; background: transparent; cursor: pointer; }
+        /* Main Wrapper jo screen ke beech mein rahega */
+        .player-card {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+        }
+
+        /* Video Area */
+        .video-box {
+            width: 100%;
+            background: #000;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            aspect-ratio: 16/9; /* Video ka standard ratio */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Buttons Row - Side by Side */
+        .button-container {
+            display: flex;
+            padding: 20px;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .btn {
+            flex: 1;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-share { background: #f0f2f5; color: #1c1e21; border: 1px solid #ddd; }
+        .btn-download { background: #007bff; color: #fff; box-shadow: 0 4px 10px rgba(0,123,255,0.2); }
+        .btn:active { transform: scale(0.95); }
+
+        /* Loader */
+        #loader {
+            position: absolute;
+            width: 35px; height: 35px;
+            border: 3px solid rgba(255,255,255,0.2);
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div id="click-layer" onclick="triggerAd()"></div>
-
-    <div class="video-container">
-        <video id="vPlayer" controls playsinline poster="">
-            <source id="vSource" src="" type="video/mp4">
-        </video>
-    </div>
-
-    <div id="ad-overlay">
-        <div class="skip-container">
-            <div id="timer-box" class="timer-txt">Ad ends in <span id="count">5</span>s</div>
-            <button id="skip-btn" class="btn-skip" onclick="closeAd()">SKIP AD &times;</button>
+    <div class="player-card">
+        <!-- Center Player -->
+        <div class="video-box">
+            <div id="loader"></div>
+            <video id="vPlayer" controls playsinline poster="" onplaying="document.getElementById('loader').style.display='none'">
+                <source id="vSource" src="" type="video/mp4">
+            </video>
         </div>
-        <iframe id="ad-frame" src=""></iframe>
+
+        <!-- Single Line Buttons -->
+        <div class="button-container">
+            <button class="btn btn-share" onclick="shareNow()">
+                <i class="fas fa-share-alt"></i> SHARE
+            </button>
+            
+            <a id="dlLink" href="#" class="btn btn-download">
+                <i class="fas fa-download"></i> DOWNLOAD
+            </a>
+        </div>
     </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        let v = urlParams.get('v'); 
-        let p = urlParams.get('p'); 
-        const directLink = "";
+        const params = new URLSearchParams(window.location.search);
+        let v = params.get('v'); 
+        let p = params.get('p'); 
 
-        const player = document.getElementById('vPlayer');
-        const overlay = document.getElementById('ad-overlay');
+        const vPlayer = document.getElementById('vPlayer');
+        const vSource = document.getElementById('vSource');
+        const dlLink = document.getElementById('dlLink');
 
         if(v) {
             v = decodeURIComponent(v);
-            if(v.includes('dropbox.com')) v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
-            document.getElementById('vSource').src = v;
-        }
-        if(p) player.poster = decodeURIComponent(p);
-        player.load();
+            let final = v;
 
-        // --- BACK BUTTON TRAP FOR AD ---
-        window.onpopstate = function() {
-            if(overlay.style.display === "flex") {
-                closeAd();
+            if(v.includes('dropbox.com')) {
+                final = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
             }
-        };
+            if(v.includes('pixeldrain.com/u/')) {
+                final = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
+            }
 
-        let adServed = false;
-        function triggerAd() {
-            if(adServed) return;
-            adServed = true;
-            
-            // Push state so back button doesn't close the webview
-            history.pushState({ad: "active"}, "Ad");
-            
-            overlay.style.display = "flex";
-            document.getElementById('ad-frame').src = directLink;
-            document.getElementById('click-layer').style.display = "none";
-
-            let timeLeft = 5;
-            const timer = setInterval(() => {
-                timeLeft--;
-                document.getElementById('count').innerText = timeLeft;
-                if(timeLeft <= 0) {
-                    clearInterval(timer);
-                    document.getElementById('timer-box').style.display = "none";
-                    document.getElementById('skip-btn').style.display = "block";
-                }
-            }, 1000);
+            vSource.src = final;
+            dlLink.href = final;
+            vPlayer.load();
         }
 
-        function closeAd() {
-            overlay.style.display = "none";
-            document.getElementById('ad-frame').src = "";
-            player.play();
+        if(p) vPlayer.poster = decodeURIComponent(p);
+
+        function shareNow() {
+            const url = window.location.href;
+            if (navigator.share) {
+                navigator.share({ title: 'VIP Video', url: url });
+            } else {
+                const t = document.createElement('textarea');
+                t.value = url;
+                document.body.appendChild(t);
+                t.select();
+                document.execCommand('copy');
+                document.body.removeChild(t);
+                alert("Link Copied!");
+            }
         }
     </script>
 </body>
