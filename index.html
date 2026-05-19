@@ -1,155 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="referrer" content="no-referrer">
     <title>VIP PLAYER</title>
-    <!-- Icons Support -->
+    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        /* Poori screen ko safed aur center karne ke liye */
         body, html { 
             margin: 0; padding: 0; 
-            width: 100%; height: 100%; 
-            background: #ffffff; /* Background White */
+            background: #000; 
+            height: 100vh; width: 100vw; 
+            overflow: hidden; 
+            display: flex; flex-direction: column; 
+            justify-content: center; align-items: center;
             font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            align-items: center;    /* Vertical Center */
-            justify-content: center; /* Horizontal Center */
-            overflow: hidden;
         }
 
-        /* Main Wrapper jo screen ke beech mein rahega */
-        .player-card {
-            width: 100%;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            background: #fff;
+        /* 1. CENTERED PLAYER (NO ADS) */
+        .video-container { 
+            width: 100%; 
+            background: #000; 
+            display: flex; justify-content: center; align-items: center;
+        }
+        video { 
+            width: 100%; 
+            height: auto; 
+            max-height: 80vh; 
+            display: block; 
+            outline: none; 
+            box-shadow: 0 0 30px rgba(31, 128, 224, 0.2);
         }
 
-        /* Video Area */
-        .video-box {
-            width: 100%;
+        /* 2. SUPPORT BUTTON SECTION */
+        .support-area { 
+            width: 100%; 
+            padding: 20px; 
+            text-align: center; 
             background: #000;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            aspect-ratio: 16/9; /* Video ka standard ratio */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
-
-        video {
-            width: 100%;
-            height: 100%;
-            display: block;
+        .support-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            background: linear-gradient(45deg, #ff9900, #ffcc00);
+            color: #000; padding: 15px 30px; border-radius: 50px;
+            text-decoration: none; font-weight: 800; font-size: 1.1rem;
+            box-shadow: 0 5px 20px rgba(255, 153, 0, 0.4);
+            transition: 0.3s;
+            text-transform: uppercase;
         }
-
-        /* Buttons Row - Side by Side */
-        .button-container {
-            display: flex;
-            padding: 20px;
-            gap: 12px;
-            width: 100%;
-        }
-
-        .btn {
-            flex: 1;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.9rem;
-            border: none;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-share { background: #f0f2f5; color: #1c1e21; border: 1px solid #ddd; }
-        .btn-download { background: #007bff; color: #fff; box-shadow: 0 4px 10px rgba(0,123,255,0.2); }
-        .btn:active { transform: scale(0.95); }
-
-        /* Loader */
-        #loader {
-            position: absolute;
-            width: 35px; height: 35px;
-            border: 3px solid rgba(255,255,255,0.2);
-            border-top: 3px solid #007bff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .support-btn:active { transform: scale(0.95); }
+        .support-btn i { font-size: 1.3rem; }
     </style>
 </head>
 <body>
 
-    <div class="player-card">
-        <!-- Center Player -->
-        <div class="video-box">
-            <div id="loader"></div>
-            <video id="vPlayer" controls playsinline poster="" onplaying="document.getElementById('loader').style.display='none'">
-                <source id="vSource" src="" type="video/mp4">
-            </video>
-        </div>
+    <!-- Main Video Player -->
+    <div class="video-container">
+        <video id="vPlayer" controls playsinline poster="">
+            <source id="vSource" src="" type="video/mp4">
+            Your browser does not support video.
+        </video>
+    </div>
 
-        <!-- Single Line Buttons -->
-        <div class="button-container">
-            <button class="btn btn-share" onclick="shareNow()">
-                <i class="fas fa-share-alt"></i> SHARE
-            </button>
-            
-            <a id="dlLink" href="#" class="btn btn-download">
-                <i class="fas fa-download"></i> DOWNLOAD
-            </a>
-        </div>
+    <!-- Click & Support Us Button (Direct Link) -->
+    <div class="support-area">
+        <a id="supportBtn" href="https://www.effectivegatecpm.com/vwizjp7s?key=82eaaf585ed86a0767368d003252b739" target="_blank" class="support-btn">
+            <i class="fas fa-heart"></i> CLICK & SUPPORT US
+        </a>
+        <p style="color: #444; font-size: 0.7rem; margin-top: 10px;">Support us to keep this service FREE forever!</p>
     </div>
 
     <script>
-        const params = new URLSearchParams(window.location.search);
-        let v = params.get('v'); 
-        let p = params.get('p'); 
+        // Automatic Data Loading from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        let v = urlParams.get('v'); 
+        let p = urlParams.get('p'); 
 
-        const vPlayer = document.getElementById('vPlayer');
-        const vSource = document.getElementById('vSource');
-        const dlLink = document.getElementById('dlLink');
+        const player = document.getElementById('vPlayer');
+        const source = document.getElementById('vSource');
 
         if(v) {
             v = decodeURIComponent(v);
-            let final = v;
-
+            
+            // Auto Fix for Dropbox / Pixeldrain / Workers.dev
             if(v.includes('dropbox.com')) {
-                final = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
+                v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
             }
             if(v.includes('pixeldrain.com/u/')) {
-                final = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
+                v = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
             }
 
-            vSource.src = final;
-            dlLink.href = final;
-            vPlayer.load();
+            source.src = v;
+            player.load();
         }
 
-        if(p) vPlayer.poster = decodeURIComponent(p);
-
-        function shareNow() {
-            const url = window.location.href;
-            if (navigator.share) {
-                navigator.share({ title: 'VIP Video', url: url });
-            } else {
-                const t = document.createElement('textarea');
-                t.value = url;
-                document.body.appendChild(t);
-                t.select();
-                document.execCommand('copy');
-                document.body.removeChild(t);
-                alert("Link Copied!");
-            }
+        if(p) {
+            player.poster = decodeURIComponent(p);
         }
     </script>
 </body>
