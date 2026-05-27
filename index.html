@@ -4,99 +4,94 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="referrer" content="no-referrer">
-    <title>VIP PLAYER</title>
-    <!-- FontAwesome for Icons -->
+    <title>VIP SECURE PLAYER</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body, html { 
-            margin: 0; padding: 0; 
-            background: #000; 
-            height: 100vh; width: 100vw; 
-            overflow: hidden; 
-            display: flex; flex-direction: column; 
-            justify-content: center; align-items: center;
-            font-family: 'Segoe UI', sans-serif;
-        }
+        body, html { margin:0; padding:0; background:#000; height:100vh; width:100vw; overflow:hidden; font-family: sans-serif; display: flex; align-items: center; justify-content: center; }
+        .video-container { width:100%; max-width: 100%; position:relative; display: flex; align-items: center; justify-content: center; }
+        video { width:100%; height:auto; max-height:100vh; display:block; outline:none; background:#000; }
 
-        /* 1. CENTERED PLAYER (NO ADS) */
-        .video-container { 
-            width: 100%; 
-            background: #000; 
-            display: flex; justify-content: center; align-items: center;
-        }
-        video { 
-            width: 100%; 
-            height: auto; 
-            max-height: 80vh; 
-            display: block; 
-            outline: none; 
-            box-shadow: 0 0 30px rgba(31, 128, 224, 0.2);
-        }
+        /* INTERSTITIAL POP */
+        #ad-overlay { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column; }
+        #ad-frame { flex: 1; border: none; width: 100%; height: 100%; background: #000; }
+        
+        .skip-container { position: absolute; top: 20px; right: 20px; z-index: 10000; }
+        .btn-skip { background: rgba(255,255,255,0.2); color: #fff; padding: 10px 20px; border-radius: 30px; border: 1px solid #fff; font-size: 0.8rem; font-weight: bold; cursor: pointer; backdrop-filter: blur(10px); display: none; }
+        .timer-txt { color: #fff; background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 30px; font-size: 0.8rem; }
 
-        /* 2. SUPPORT BUTTON SECTION */
-        .support-area { 
-            width: 100%; 
-            padding: 20px; 
-            text-align: center; 
-            background: #000;
-        }
-        .support-btn {
-            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-            background: linear-gradient(45deg, #ff9900, #ffcc00);
-            color: #000; padding: 15px 30px; border-radius: 50px;
-            text-decoration: none; font-weight: 800; font-size: 1.1rem;
-            box-shadow: 0 5px 20px rgba(255, 153, 0, 0.4);
-            transition: 0.3s;
-            text-transform: uppercase;
-        }
-        .support-btn:active { transform: scale(0.95); }
-        .support-btn i { font-size: 1.3rem; }
+        #click-layer { position: fixed; inset: 0; z-index: 5000; background: transparent; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <!-- Main Video Player -->
+    <div id="click-layer" onclick="triggerAd()"></div>
+
     <div class="video-container">
         <video id="vPlayer" controls playsinline poster="">
             <source id="vSource" src="" type="video/mp4">
-            Your browser does not support video.
         </video>
     </div>
 
-    <!-- Click & Support Us Button (Direct Link) -->
-    <div class="support-area">
-        <a id="supportBtn" href="https://omg10.com/4/10632629" target="_blank" class="support-btn">
-            <i class="fas fa-heart"></i> CLICK & SUPPORT US
-        </a>
-        <p style="color: #444; font-size: 0.7rem; margin-top: 10px;">Support us to keep this service FREE forever!</p>
+    <div id="ad-overlay">
+        <div class="skip-container">
+            <div id="timer-box" class="timer-txt">Ad ends in <span id="count">5</span>s</div>
+            <button id="skip-btn" class="btn-skip" onclick="closeAd()">SKIP AD &times;</button>
+        </div>
+        <iframe id="ad-frame" src=""></iframe>
     </div>
 
     <script>
-        // Automatic Data Loading from URL
         const urlParams = new URLSearchParams(window.location.search);
         let v = urlParams.get('v'); 
         let p = urlParams.get('p'); 
+        const directLink = "https://omg10.com/4/10632629";
 
         const player = document.getElementById('vPlayer');
-        const source = document.getElementById('vSource');
+        const overlay = document.getElementById('ad-overlay');
 
         if(v) {
             v = decodeURIComponent(v);
-            
-            // Auto Fix for Dropbox / Pixeldrain / Workers.dev
-            if(v.includes('dropbox.com')) {
-                v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
-            }
-            if(v.includes('pixeldrain.com/u/')) {
-                v = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
-            }
+            if(v.includes('dropbox.com')) v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
+            document.getElementById('vSource').src = v;
+        }
+        if(p) player.poster = decodeURIComponent(p);
+        player.load();
 
-            source.src = v;
-            player.load();
+        // --- BACK BUTTON TRAP FOR AD ---
+        window.onpopstate = function() {
+            if(overlay.style.display === "flex") {
+                closeAd();
+            }
+        };
+
+        let adServed = false;
+        function triggerAd() {
+            if(adServed) return;
+            adServed = true;
+            
+            // Push state so back button doesn't close the webview
+            history.pushState({ad: "active"}, "Ad");
+            
+            overlay.style.display = "flex";
+            document.getElementById('ad-frame').src = directLink;
+            document.getElementById('click-layer').style.display = "none";
+
+            let timeLeft = 5;
+            const timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('count').innerText = timeLeft;
+                if(timeLeft <= 0) {
+                    clearInterval(timer);
+                    document.getElementById('timer-box').style.display = "none";
+                    document.getElementById('skip-btn').style.display = "block";
+                }
+            }, 1000);
         }
 
-        if(p) {
-            player.poster = decodeURIComponent(p);
+        function closeAd() {
+            overlay.style.display = "none";
+            document.getElementById('ad-frame').src = "";
+            player.play();
         }
     </script>
 </body>
