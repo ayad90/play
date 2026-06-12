@@ -1,182 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-    <script id="kq7w2p">
-(function() {
-  var lastAdTime = localStorage.getItem("lastAdTime");
-  var currentTime = new Date().getTime();
-
-  // 1 hour = 3600000 ms
-  if (!lastAdTime || (currentTime - lastAdTime) > 3600000) {
-
-    // Montag Ad Script
-    (function(s){
-      s.dataset.zone='10791269',
-      s.src='https://nap5k.com/tag.min.js'
-    })([document.documentElement, document.body]
-      .filter(Boolean)
-      .pop()
-      .appendChild(document.createElement('script'))
-    );
-
-    // Save time
-    localStorage.setItem("lastAdTime", currentTime);
-  }
-})();
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="referrer" content="no-referrer">
-    <title>VIP PLAYER</title>
-    <!-- Icons Support -->
+    <title>VIP SECURE PLAYER</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { margin:0; padding:0; background:#000; height:100vh; width:100vw; overflow:hidden; font-family: 'Segoe UI', sans-serif; display: flex; align-items: center; justify-content: center; }
+
+        /* MASTER BACK BUTTON - ALWAYS ON TOP */
+        #master-exit-btn { 
+            position: fixed !important; 
+            top: 15px !important; 
+            left: 15px !important; 
+            width: 45px !important; 
+            height: 45px !important; 
+            background: #ff9900 !important; 
+            color: #000 !important; 
+            border-radius: 50% !important; 
+            display: flex !important; 
+            align-items: center !important; 
+            justify-content: center !important; 
+            z-index: 2147483647 !important; 
+            cursor: pointer !important; 
+            border: 2px solid #fff !important;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5) !important;
+            font-size: 1.2rem !important;
+        }
+
+        /* CENTERED PLAYER */
+        .video-container { width:100%; display: flex; align-items: center; justify-content: center; }
+        video { width:100%; height:auto; max-height:100vh; display:block; outline:none; background:#000; }
+
+        /* INTERSTITIAL AD OVERLAY */
+        #ad-overlay { position: fixed; inset: 0; background: #000; z-index: 2147483640; display: none; flex-direction: column; }
+        #ad-frame { flex: 1; border: none; width: 100%; height: 100%; background: #000; }
         
-        /* Poori screen ko safed aur center karne ke liye */
-        body, html { 
-            margin: 0; padding: 0; 
-            width: 100%; height: 100%; 
-            background: #ffffff; /* Background White */
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            align-items: center;    /* Vertical Center */
-            justify-content: center; /* Horizontal Center */
-            overflow: hidden;
-        }
-
-        /* Main Wrapper jo screen ke beech mein rahega */
-        .player-card {
-            width: 100%;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            background: #fff;
-        }
-
-        /* Video Area */
-        .video-box {
-            width: 100%;
-            background: #000;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            aspect-ratio: 16/9; /* Video ka standard ratio */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        video {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        /* Buttons Row - Side by Side */
-        .button-container {
-            display: flex;
-            padding: 20px;
-            gap: 12px;
-            width: 100%;
-        }
-
-        .btn {
-            flex: 1;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.9rem;
-            border: none;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-share { background: #f0f2f5; color: #1c1e21; border: 1px solid #ddd; }
-        .btn-download { background: #007bff; color: #fff; box-shadow: 0 4px 10px rgba(0,123,255,0.2); }
-        .btn:active { transform: scale(0.95); }
-
-        /* Loader */
-        #loader {
-            position: absolute;
-            width: 35px; height: 35px;
-            border: 3px solid rgba(255,255,255,0.2);
-            border-top: 3px solid #007bff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* SKIP TIMER UI */
+        .skip-container { position: absolute; top: 15px; right: 15px; z-index: 2147483646; }
+        .btn-skip { background: #fff; color: #000; padding: 10px 22px; border-radius: 30px; border: none; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .timer-txt { color: #fff; background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 30px; font-size: 0.85rem; border: 1px solid #ff9900; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="player-card">
-        <!-- Center Player -->
-        <div class="video-box">
-            <div id="loader"></div>
-            <video id="vPlayer" controls playsinline poster="" onplaying="document.getElementById('loader').style.display='none'">
-                <source id="vSource" src="" type="video/mp4">
-            </video>
-        </div>
+    <!-- MASTER BACK BUTTON -->
+    <div id="master-exit-btn" onclick="goBackToApp()">
+        <i class="fas fa-arrow-left"></i>
+    </div>
 
-        <!-- Single Line Buttons -->
-        <div class="button-container">
-            <button class="btn btn-share" onclick="shareNow()">
-                <i class="fas fa-share-alt"></i> SHARE
-            </button>
-            
-            <a id="dlLink" href="https://omg10.com/4/10632629" class="btn btn-download">
-                <i class="fas fa-download"></i> DOWNLOAD
-            </a>
+    <!-- Video Player -->
+    <div class="video-container">
+        <video id="vPlayer" controls playsinline poster="">
+            <source id="vSource" src="" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- Interstitial Ad Overlay -->
+    <div id="ad-overlay">
+        <div class="skip-container">
+            <div id="timer-box" class="timer-txt">Please wait <span id="count">5</span>s</div>
+            <button id="skip-btn" class="btn-skip" onclick="closeAd()">SKIP AD & RESUME &times;</button>
         </div>
+        <iframe id="ad-frame" src=""></iframe>
     </div>
 
     <script>
-        const params = new URLSearchParams(window.location.search);
-        let v = params.get('v'); 
-        let p = params.get('p'); 
+        function goBackToApp() { window.history.back(); }
 
-        const vPlayer = document.getElementById('vPlayer');
-        const vSource = document.getElementById('vSource');
-        const dlLink = document.getElementById('dlLink');
+        const urlParams = new URLSearchParams(window.location.search);
+        let v = urlParams.get('v'); 
+        let p = urlParams.get('p'); 
+        
+        // --- 🟢 AD CONFIG: APNA DIRECT LINK YAHAN DALEIN ---
+        const directLink = "https://www.effectivegatecpm.com/vwizjp7s?key=82eaaf585ed86a0767368d003252b739";
+
+        const player = document.getElementById('vPlayer');
+        const source = document.getElementById('vSource');
+        const overlay = document.getElementById('ad-overlay');
 
         if(v) {
             v = decodeURIComponent(v);
-            let final = v;
+            if(v.includes('dropbox.com')) v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
+            if(v.includes('pixeldrain.com/u/')) v = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
+            source.src = v;
+        }
+        if(p) player.poster = decodeURIComponent(p);
+        player.load();
 
-            if(v.includes('dropbox.com')) {
-                final = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
-            }
-            if(v.includes('pixeldrain.com/u/')) {
-                final = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
-            }
+        // --- 🕒 SMART MID-ROLL AD LOGIC ---
+        let adTriggered = false;
 
-            vSource.src = final;
-            dlLink.href = final;
-            vPlayer.load();
+        player.ontimeupdate = function() {
+            // Agar video 60 seconds (1 minute) se zyada chal gayi hai
+            if (player.currentTime >= 60 && !adTriggered) {
+                triggerMidRollAd();
+            }
+        };
+
+        function triggerMidRollAd() {
+            adTriggered = true; // Taaki baar-baar na khule
+            player.pause(); // Video roko
+            
+            overlay.style.display = "flex";
+            document.getElementById('ad-frame').src = directLink;
+
+            let timeLeft = 5;
+            const timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('count').innerText = timeLeft;
+                if(timeLeft <= 0) {
+                    clearInterval(timer);
+                    document.getElementById('timer-box').style.display = "none";
+                    document.getElementById('skip-btn').style.display = "block";
+                }
+            }, 1000);
         }
 
-        if(p) vPlayer.poster = decodeURIComponent(p);
-
-        function shareNow() {
-            const url = window.location.href;
-            if (navigator.share) {
-                navigator.share({ title: 'VIP Video', url: url });
-            } else {
-                const t = document.createElement('textarea');
-                t.value = url;
-                document.body.appendChild(t);
-                t.select();
-                document.execCommand('copy');
-                document.body.removeChild(t);
-                alert("Link Copied!");
-            }
+        function closeAd() {
+            overlay.style.display = "none";
+            document.getElementById('ad-frame').src = "";
+            player.play(); // Video wahi se shuru karo
         }
+
+        // Keep Back Button on top
+        setInterval(() => {
+            document.getElementById('master-exit-btn').style.zIndex = "2147483647";
+        }, 500);
     </script>
 </body>
 </html>
