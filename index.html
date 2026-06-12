@@ -9,76 +9,55 @@
     <style>
         body, html { margin:0; padding:0; background:#000; height:100vh; width:100vw; overflow:hidden; font-family: 'Segoe UI', sans-serif; display: flex; align-items: center; justify-content: center; }
 
-        /* MASTER BACK BUTTON - ALWAYS ON TOP */
-        #master-exit-btn { 
-            position: fixed !important; 
-            top: 15px !important; 
-            left: 15px !important; 
-            width: 45px !important; 
-            height: 45px !important; 
-            background: #ff9900 !important; 
-            color: #000 !important; 
-            border-radius: 50% !important; 
-            display: flex !important; 
-            align-items: center !important; 
-            justify-content: center !important; 
-            z-index: 2147483647 !important; 
-            cursor: pointer !important; 
-            border: 2px solid #fff !important;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5) !important;
-            font-size: 1.2rem !important;
-        }
-
         /* CENTERED PLAYER */
-        .video-container { width:100%; display: flex; align-items: center; justify-content: center; }
+        .video-container { width:100%; display: flex; align-items: center; justify-content: center; position: relative; }
         video { width:100%; height:auto; max-height:100vh; display:block; outline:none; background:#000; }
 
         /* INTERSTITIAL AD OVERLAY */
-        #ad-overlay { position: fixed; inset: 0; background: #000; z-index: 2147483640; display: none; flex-direction: column; }
+        #ad-overlay { position: fixed; inset: 0; background: #000; z-index: 99999; display: none; flex-direction: column; }
         #ad-frame { flex: 1; border: none; width: 100%; height: 100%; background: #000; }
         
         /* SKIP TIMER UI */
-        .skip-container { position: absolute; top: 15px; right: 15px; z-index: 2147483646; }
+        .skip-container { position: absolute; top: 15px; right: 15px; z-index: 100000; }
         .btn-skip { background: #fff; color: #000; padding: 10px 22px; border-radius: 30px; border: none; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .timer-txt { color: #fff; background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 30px; font-size: 0.85rem; border: 1px solid #ff9900; font-weight: bold; }
+
+        /* HIJACK LAYER (Only active after 1 min) */
+        #hijack-layer { position: absolute; inset: 0; z-index: 1000; background: transparent; display: none; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <!-- MASTER BACK BUTTON -->
-    <div id="master-exit-btn" onclick="goBackToApp()">
-        <i class="fas fa-arrow-left"></i>
-    </div>
-
-    <!-- Video Player -->
     <div class="video-container">
+        <!-- The Hijack Layer to catch the "Resume" click -->
+        <div id="hijack-layer" onclick="triggerAd()"></div>
+
         <video id="vPlayer" controls playsinline poster="">
             <source id="vSource" src="" type="video/mp4">
         </video>
     </div>
 
-    <!-- Interstitial Ad Overlay -->
+    <!-- Ad Overlay -->
     <div id="ad-overlay">
         <div class="skip-container">
-            <div id="timer-box" class="timer-txt">Please wait <span id="count">5</span>s</div>
+            <div id="timer-box" class="timer-txt">Ad ends in <span id="count">5</span>s</div>
             <button id="skip-btn" class="btn-skip" onclick="closeAd()">SKIP AD & RESUME &times;</button>
         </div>
         <iframe id="ad-frame" src=""></iframe>
     </div>
 
     <script>
-        function goBackToApp() { window.history.back(); }
-
         const urlParams = new URLSearchParams(window.location.search);
         let v = urlParams.get('v'); 
         let p = urlParams.get('p'); 
         
         // --- 🟢 AD CONFIG: APNA DIRECT LINK YAHAN DALEIN ---
-        const directLink = "https://www.effectivecpmnetwork.com/vwizjp7s?key=82eaaf585ed86a0767368d003252b739";
+        const directLink = "https://www.effectivegatecpm.com/vwizjp7s?key=82eaaf585ed86a0767368d003252b739";
 
         const player = document.getElementById('vPlayer');
         const source = document.getElementById('vSource');
         const overlay = document.getElementById('ad-overlay');
+        const hijack = document.getElementById('hijack-layer');
 
         if(v) {
             v = decodeURIComponent(v);
@@ -89,22 +68,23 @@
         if(p) player.poster = decodeURIComponent(p);
         player.load();
 
-        // --- 🕒 SMART MID-ROLL AD LOGIC ---
-        let adTriggered = false;
+        // --- 🕒 TRAP LOGIC ---
+        let limitReached = false;
 
         player.ontimeupdate = function() {
-            // Agar video 60 seconds (1 minute) se zyada chal gayi hai
-            if (player.currentTime >= 60 && !adTriggered) {
-                triggerMidRollAd();
+            // Agar video 60 seconds (1 minute) touch karti hai
+            if (player.currentTime >= 60 && !limitReached) {
+                player.pause(); // Video ko ruka do
+                limitReached = true;
+                hijack.style.display = "block"; // Click layer active kardo
             }
         };
 
-        function triggerMidRollAd() {
-            adTriggered = true; // Taaki baar-baar na khule
-            player.pause(); // Video roko
-            
+        function triggerAd() {
+            // Show Interstitial
             overlay.style.display = "flex";
             document.getElementById('ad-frame').src = directLink;
+            hijack.style.display = "none"; // Layer hata do taaki ad skip ke baad video chale
 
             let timeLeft = 5;
             const timer = setInterval(() => {
@@ -121,13 +101,8 @@
         function closeAd() {
             overlay.style.display = "none";
             document.getElementById('ad-frame').src = "";
-            player.play(); // Video wahi se shuru karo
+            player.play(); // Continue video
         }
-
-        // Keep Back Button on top
-        setInterval(() => {
-            document.getElementById('master-exit-btn').style.zIndex = "2147483647";
-        }, 500);
     </script>
 </body>
 </html>
