@@ -4,110 +4,154 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="referrer" content="no-referrer">
-    <title>VIP SECURE PLAYER</title>
+    <title>VIP PREMIUM PLAYER</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body, html { margin:0; padding:0; background:#000; height:100vh; width:100vw; overflow:hidden; font-family: 'Segoe UI', sans-serif; display: flex; align-items: center; justify-content: center; }
+        /* CLEAN DARK THEME */
+        body, html { 
+            margin: 0; padding: 0; 
+            background: #000; 
+            color: #fff; 
+            height: 100vh; 
+            width: 100vw; 
+            overflow: hidden; 
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center; /* Vertical Center */
+            justify-content: center; /* Horizontal Center */
+        }
 
-        /* CENTERED PLAYER */
-        .video-container { width:100%; display: flex; align-items: center; justify-content: center; position: relative; }
-        video { width:100%; height:auto; max-height:100vh; display:block; outline:none; background:#000; }
+        .main-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 10px;
+        }
 
-        /* INTERSTITIAL AD OVERLAY - INSTANT SHOW */
-        #ad-overlay { position: fixed; inset: 0; background: #000; z-index: 99999; display: none; flex-direction: column; }
-        #ad-frame { flex: 1; border: none; width: 100%; height: 100%; background: #000; }
-        
-        /* SKIP TIMER UI - ON TOP OF AD */
-        .skip-container { position: absolute; top: 15px; right: 15px; z-index: 100000; }
-        .btn-skip { background: #ff9900; color: #000; padding: 12px 25px; border-radius: 30px; border: 2px solid #fff; font-size: 0.9rem; font-weight: 900; cursor: pointer; display: none; box-shadow: 0 5px 20px rgba(0,0,0,0.8); }
-        .timer-txt { color: #fff; background: rgba(0,0,0,0.9); padding: 10px 20px; border-radius: 30px; font-size: 0.85rem; border: 1px solid #ff9900; font-weight: bold; }
+        /* CENTERED VIDEO PLAYER */
+        .player-box {
+            width: 100%;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(31, 128, 224, 0.2);
+            border: 1px solid #222;
+        }
+        video {
+            width: 100%;
+            height: auto;
+            max-height: 60vh;
+            display: block;
+            outline: none;
+        }
 
-        /* HIJACK LAYER (Active after 1 min) */
-        #hijack-layer { position: absolute; inset: 0; z-index: 1000; background: transparent; display: none; cursor: pointer; }
-        
-        /* LOADING SPINNER FOR AD */
-        #ad-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #ff9900; font-size: 1.2rem; z-index: 99998; background: #000; }
+        /* PREMIUM BUTTONS AREA */
+        .btn-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .action-btn { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px;
+            padding: 16px; 
+            border-radius: 10px; 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 1rem; 
+            transition: 0.3s; 
+            border: none; 
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        /* Download Button (Orange Gradient) */
+        .btn-download { 
+            background: linear-gradient(to right, #ff9900, #ffcc00); 
+            color: #000; 
+            box-shadow: 0 5px 15px rgba(255, 153, 0, 0.3); 
+        }
+        /* Next Part Button (Blue) */
+        .btn-next { 
+            background: #1f80e0; 
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(31, 128, 224, 0.3);
+        }
+        .action-btn:active { transform: scale(0.96); }
+
+        /* Small Credits Text */
+        .footer-text {
+            font-size: 0.65rem;
+            color: #444;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="video-container">
-        <!-- The Hijack Layer to catch the "Resume" click -->
-        <div id="hijack-layer" onclick="triggerAd()"></div>
-
-        <video id="vPlayer" controls playsinline poster="">
-            <source id="vSource" src="" type="video/mp4">
-        </video>
-    </div>
-
-    <!-- Ad Overlay with Loader -->
-    <div id="ad-overlay">
-        <div id="ad-loading"><i class="fas fa-spinner fa-spin"></i> &nbsp; Loading Secure Ad...</div>
-        <div class="skip-container">
-            <div id="timer-box" class="timer-txt">Ad ends in <span id="count">5</span>s</div>
-            <button id="skip-btn" class="btn-skip" onclick="closeAd()">SKIP & RESUME &times;</button>
+    <div class="main-container">
+        
+        <!-- THE CENTERED PLAYER -->
+        <div class="player-box">
+            <video id="vPlayer" controls playsinline poster="">
+                <source id="vSource" src="" type="video/mp4">
+            </video>
         </div>
-        <iframe id="ad-frame" src="" onload="document.getElementById('ad-loading').style.display='none'"></iframe>
+
+        <!-- THE BUTTONS -->
+        <div class="btn-container">
+            <!-- 1. Download Button (Direct Link) -->
+            <a href="https://www.effectivegatecpm.com/vwizjp7s?key=82eaaf585ed86a0767368d003252b739" class="action-btn btn-download">
+                <i class="fas fa-file-download"></i> Download Video (4K HD)
+            </a>
+
+            <!-- 2. Next Part Button (Direct Link) -->
+            <a href="https://www.effectivegatecpm.com/vwizjp7s?key=82eaaf585ed86a0767368d003252b739" class="action-btn btn-next">
+                <i class="fas fa-step-forward"></i> Play Next Part
+            </a>
+        </div>
+
+        <div class="footer-text">Secure Encrypted VIP Streaming</div>
+
     </div>
 
     <script>
+        // --- DATA LOADING & AUTO-FIX LOGIC ---
         const urlParams = new URLSearchParams(window.location.search);
-        let v = urlParams.get('v'); 
-        let p = urlParams.get('p'); 
-        
-        // --- 🟢 AD CONFIG: APNA DIRECT LINK YAHAN DALEIN ---
-        const directLink = "https://www.effectivegatecpm.com/vwizjp7s?key=82eaaf585ed86a0767368d003252b739";
+        let videoUrl = urlParams.get('v'); 
+        let posterUrl = urlParams.get('p'); 
 
         const player = document.getElementById('vPlayer');
         const source = document.getElementById('vSource');
-        const overlay = document.getElementById('ad-overlay');
-        const hijack = document.getElementById('hijack-layer');
 
-        if(v) {
-            v = decodeURIComponent(v);
-            if(v.includes('dropbox.com')) v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
-            if(v.includes('pixeldrain.com/u/')) v = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
-            source.src = v;
-        }
-        if(p) player.poster = decodeURIComponent(p);
-        player.load();
-
-        // --- 🕒 TRAP LOGIC ---
-        let limitReached = false;
-
-        player.ontimeupdate = function() {
-            // Agar video 60 seconds (1 minute) touch karti hai
-            if (player.currentTime >= 60 && !limitReached) {
-                player.pause(); // Video ko ruka do
-                limitReached = true;
-                hijack.style.display = "block"; // Click layer active
+        if(videoUrl) {
+            videoUrl = decodeURIComponent(videoUrl);
+            
+            // 1. Dropbox Fix
+            if(videoUrl.includes('dropbox.com')) {
+                videoUrl = videoUrl.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
             }
-        };
-
-        function triggerAd() {
-            // INSTANT SHOW OVERLAY
-            overlay.style.display = "flex";
-            document.getElementById('ad-frame').src = directLink;
-            hijack.style.display = "none";
-
-            // START TIMER IMMEDIATELY
-            let timeLeft = 5;
-            const timer = setInterval(() => {
-                timeLeft--;
-                document.getElementById('count').innerText = timeLeft;
-                if(timeLeft <= 0) {
-                    clearInterval(timer);
-                    document.getElementById('timer-box').style.display = "none";
-                    document.getElementById('skip-btn').style.display = "block";
-                }
-            }, 1000);
+            // 2. Pixeldrain Fix
+            if(videoUrl.includes('pixeldrain.com/u/')) {
+                videoUrl = 'https://pixeldrain.com/api/file/' + videoUrl.split('/').pop();
+            }
+            
+            source.src = videoUrl;
         }
 
-        function closeAd() {
-            overlay.style.display = "none";
-            document.getElementById('ad-frame').src = "";
-            player.play(); // Continue video
+        if(posterUrl) {
+            player.poster = decodeURIComponent(posterUrl);
         }
+
+        // Load and Ready
+        player.load();
     </script>
 </body>
 </html>
