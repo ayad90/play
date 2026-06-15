@@ -1,16 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>(function(s){s.dataset.zone='10791244',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-    <script>(function(s){s.dataset.zone='10790077',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-    <script src="https://5gvci.com/act/files/tag.min.js?z=11150267" data-cfasync="false" async></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="referrer" content="no-referrer">
     <title>VIP PREMIUM PLAYER</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* CLEAN DARK THEME */
         body, html { 
             margin: 0; padding: 0; 
             background: #000; 
@@ -20,8 +16,8 @@
             overflow: hidden; 
             font-family: 'Segoe UI', sans-serif;
             display: flex;
-            align-items: center; /* Vertical Center */
-            justify-content: center; /* Horizontal Center */
+            align-items: center; 
+            justify-content: center;
         }
 
         .main-container {
@@ -29,11 +25,10 @@
             max-width: 500px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
             padding: 10px;
         }
 
-        /* CENTERED VIDEO PLAYER */
         .player-box {
             width: 100%;
             background: #000;
@@ -42,118 +37,113 @@
             box-shadow: 0 0 30px rgba(31, 128, 224, 0.2);
             border: 1px solid #222;
         }
-        video {
-            width: 100%;
-            height: auto;
-            max-height: 60vh;
-            display: block;
-            outline: none;
-        }
+        video { width: 100%; height: auto; max-height: 60vh; display: block; outline: none; }
 
-        /* PREMIUM BUTTONS AREA */
-        .btn-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+        .btn-container { width: 100%; display: flex; flex-direction: column; gap: 10px; }
         .action-btn { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 10px;
-            padding: 16px; 
-            border-radius: 10px; 
-            text-decoration: none; 
-            font-weight: bold; 
-            font-size: 1rem; 
-            transition: 0.3s; 
-            border: none; 
-            cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 16px; border-radius: 10px; text-decoration: none; 
+            font-weight: bold; font-size: 1rem; border: none; cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
-        /* Download Button (Orange Gradient) */
-        .btn-download { 
-            background: linear-gradient(to right, #ff9900, #ffcc00); 
-            color: #000; 
-            box-shadow: 0 5px 15px rgba(255, 153, 0, 0.3); 
-        }
-        /* Next Part Button (Blue) */
-        .btn-next { 
-            background: #1f80e0; 
-            color: #fff;
-            box-shadow: 0 5px 15px rgba(31, 128, 224, 0.3);
-        }
-        .action-btn:active { transform: scale(0.96); }
+        .btn-download { background: linear-gradient(to right, #ff9900, #ffcc00); color: #000; }
+        .btn-next { background: #1f80e0; color: #fff; }
 
-        /* Small Credits Text */
-        .footer-text {
-            font-size: 0.65rem;
-            color: #444;
+        /* VIGNETTE AD OVERLAY (30s) */
+        #vignette-ad {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 9999;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
             text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
+        .ad-content {
+            background: #111;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #ff9900;
+            width: 90%;
+            max-width: 320px;
+            box-shadow: 0 0 50px rgba(255,153,0,0.3);
+        }
+        .ad-img { width: 100%; border-radius: 10px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
     <div class="main-container">
-        
-        <!-- THE CENTERED PLAYER -->
         <div class="player-box">
             <video id="vPlayer" controls playsinline poster="">
                 <source id="vSource" src="" type="video/mp4">
             </video>
         </div>
 
-        <!-- THE BUTTONS -->
         <div class="btn-container">
-            <!-- 1. Download Button (Direct Link) -->
-            <a href="https://omg10.com/4/10632629" class="action-btn btn-download">
-                <i class="fas fa-file-download"></i> Download Video (4K HD)
+            <a href="https://www.effectivegatecpm.com/vwizjp7s?key=82eaaf585ed86a0767368d003252b739" class="action-btn btn-download">
+                <i class="fas fa-file-download"></i> Download HD
             </a>
-
-            <!-- 2. Next Part Button (Direct Link) -->
-            <a href="https://omg10.com/4/10632629" class="action-btn btn-next">
-                <i class="fas fa-step-forward"></i> Play Next Part
+            <a href="https://www.effectivegatecpm.com/vwizjp7s?key=82eaaf585ed86a0767368d003252b739" class="action-btn btn-next">
+                <i class="fas fa-step-forward"></i> Next Part
             </a>
         </div>
+    </div>
 
-        <div class="footer-text">Secure Encrypted VIP Streaming</div>
-
+    <!-- VIGNETTE AD OVERLAY -->
+    <div id="vignette-ad" onclick="openChromeAd()">
+        <div class="ad-content">
+            <div style="color: #ff9900; font-weight: bold; margin-bottom: 10px;">PROMOTED CONTENT</div>
+            <img src="https://i.ibb.co/35ghhyCq/IMG-20260119-201040-663.jpg" class="ad-img">
+            <h4 style="margin: 0; color: #fff;">Video Paused</h4>
+            <p style="font-size: 0.8rem; color: #888;">Click to unlock full speed and continue watching.</p>
+            <button class="action-btn btn-download" style="width: 100%; margin-top: 15px;">UNBLOCK NOW</button>
+            <div style="margin-top: 10px; font-size: 0.7rem; color: #444;">Ad will close after click</div>
+        </div>
     </div>
 
     <script>
-        // --- DATA LOADING & AUTO-FIX LOGIC ---
-        const urlParams = new URLSearchParams(window.location.search);
-        let videoUrl = urlParams.get('v'); 
-        let posterUrl = urlParams.get('p'); 
-
+        // --- CONFIGURATION ---
+        const MONETAG_LINK = "https://omg10.com/4/10632629";
         const player = document.getElementById('vPlayer');
-        const source = document.getElementById('vSource');
+        const adOverlay = document.getElementById('vignette-ad');
+        let adShown = false;
 
-        if(videoUrl) {
-            videoUrl = decodeURIComponent(videoUrl);
-            
-            // 1. Dropbox Fix
-            if(videoUrl.includes('dropbox.com')) {
-                videoUrl = videoUrl.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
+        // 1. Detect 30 Seconds Playtime
+        player.ontimeupdate = function() {
+            if (player.currentTime >= 30 && !adShown) {
+                adShown = true;
+                player.pause();
+                adOverlay.style.display = "flex";
             }
-            // 2. Pixeldrain Fix
-            if(videoUrl.includes('pixeldrain.com/u/')) {
-                videoUrl = 'https://pixeldrain.com/api/file/' + videoUrl.split('/').pop();
-            }
+        };
+
+        // 2. Open Link in EXTERNAL CHROME
+        function openChromeAd() {
+            // '_system' or '_blank' triggers external browser in most APK wrappers
+            window.open(MONETAG_LINK, '_system'); 
+            window.open(MONETAG_LINK, '_blank'); 
             
-            source.src = videoUrl;
+            // Close ad and resume video after a small delay
+            setTimeout(() => {
+                adOverlay.style.display = "none";
+                player.play();
+            }, 500);
         }
 
-        if(posterUrl) {
-            player.poster = decodeURIComponent(posterUrl);
+        // --- LOAD DATA ---
+        const urlParams = new URLSearchParams(window.location.search);
+        let v = urlParams.get('v'); 
+        let p = urlParams.get('p'); 
+        if(v) {
+            v = decodeURIComponent(v);
+            if(v.includes('dropbox.com')) v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
+            if(v.includes('pixeldrain.com/u/')) v = 'https://pixeldrain.com/api/file/' + v.split('/').pop();
+            document.getElementById('vSource').src = v;
         }
-
-        // Load and Ready
+        if(p) player.poster = decodeURIComponent(p);
         player.load();
     </script>
 </body>
