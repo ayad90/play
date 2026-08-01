@@ -4,140 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="referrer" content="no-referrer">
-    <title>VIP SMART PLAYER</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>VIP PURE PLAYER</title>
     <style>
-        /* CENTERED PREMIUM UI */
+        /* PURE BLACK CLEAN UI - ONLY VIDEO */
         body, html { 
             margin: 0; padding: 0; 
             background: #000; 
-            color: #fff; 
             height: 100vh; 
             width: 100vw; 
             overflow: hidden; 
-            font-family: 'Segoe UI', sans-serif;
             display: flex;
             align-items: center; 
             justify-content: center; 
         }
 
-        .main-container {
+        .video-container {
             width: 100%;
-            max-width: 500px;
+            height: 100%;
             display: flex;
-            flex-direction: column;
-            gap: 20px;
-            padding: 15px;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* PLAYER BOX */
-        .player-box {
-            width: 100%;
-            background: #000;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 40px rgba(31, 128, 224, 0.3);
-            border: 1px solid #222;
-            position: relative;
-        }
         video {
             width: 100%;
-            height: auto;
-            max-height: 60vh;
-            display: block;
+            height: 100%;
+            /* Object-fit contain se video kategi nahi, cover se poori screen bhar jayegi */
+            object-fit: contain; 
             outline: none;
         }
-
-        /* RESUME TOAST NOTIFICATION */
-        #resume-toast {
-            position: absolute;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(31, 128, 224, 0.9);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            display: none;
-            z-index: 100;
-            animation: fadeIn 0.5s;
-        }
-        @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
-
-        /* PREMIUM BUTTONS */
-        .btn-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .action-btn { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 12px;
-            padding: 18px; 
-            border-radius: 12px; 
-            text-decoration: none; 
-            font-weight: 900; 
-            font-size: 1.1rem; 
-            transition: 0.3s; 
-            border: none; 
-            cursor: pointer;
-            text-transform: uppercase;
-        }
-        
-        .btn-download { background: linear-gradient(45deg, #ff9900, #ffcc00); color: #000; box-shadow: 0 8px 20px rgba(255, 153, 0, 0.4); }
-        .btn-next { background: #1f80e0; color: #fff; box-shadow: 0 8px 20px rgba(31, 128, 224, 0.4); }
-        .action-btn:active { transform: scale(0.95); }
-
-        .footer-tag { font-size: 0.7rem; color: #444; text-align: center; letter-spacing: 1px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="main-container">
-        
-        <div class="player-box">
-            <div id="resume-toast">Resuming from where you left...</div>
-            <video id="vPlayer" controls playsinline poster="">
-                <source id="vSource" src="" type="video/mp4">
-            </video>
-        </div>
-
-        <div class="btn-container">
-            <button onclick="openInChrome()" class="action-btn btn-download">
-                <i class="fas fa-crown"></i> Download Video (4K HD)
-            </button>
-            <button onclick="openInChrome()" class="action-btn btn-next">
-                <i class="fas fa-forward"></i> Play Next Part
-            </button>
-        </div>
-
-        <div class="footer-tag">AI-POWERED SMART RESUME PLAYER</div>
-
+    <div class="video-container">
+        <!-- Pure Player without any overlay buttons or ads -->
+        <video id="vPlayer" controls autoplay playsinline poster="">
+            <source id="vSource" src="" type="video/mp4">
+        </video>
     </div>
 
     <script>
-        const directAdLink = "https://www.effectivegatecpm.com/vwizjp7s?key=82eaaf585ed86a0767368d003252b739";
-
-        function openInChrome() {
-            window.open(directAdLink, '_blank');
-        }
-
         const urlParams = new URLSearchParams(window.location.search);
         let videoUrl = urlParams.get('v'); 
         let posterUrl = urlParams.get('p'); 
 
         const player = document.getElementById('vPlayer');
         const source = document.getElementById('vSource');
-        const toast = document.getElementById('resume-toast');
 
         if(videoUrl) {
             videoUrl = decodeURIComponent(videoUrl);
             
+            // Auto Fix for Dropbox & Pixeldrain
             if(videoUrl.includes('dropbox.com')) {
                 videoUrl = videoUrl.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
             }
@@ -147,28 +65,26 @@
             
             source.src = videoUrl;
             
-            // --- SMART RESUME LOGIC ---
-            // Unique key for each video based on its URL
-            const storageKey = "progress_" + btoa(videoUrl).substring(0, 16);
+            // --- SILENT AUTO-RESUME LOGIC ---
+            const storageKey = "pv_" + btoa(videoUrl).substring(0, 12);
 
-            // 1. Load saved time
+            // 1. Silent Resume (No toast/pop-up)
             player.addEventListener('loadedmetadata', function() {
                 const savedTime = localStorage.getItem(storageKey);
                 if (savedTime) {
                     player.currentTime = parseFloat(savedTime);
-                    toast.style.display = "block";
-                    setTimeout(() => { toast.style.display = "none"; }, 3000);
                 }
+                player.play(); // Automatic Play
             });
 
-            // 2. Save current time periodically
+            // 2. Continuous Background Save
             player.ontimeupdate = () => {
-                if (player.currentTime > 5) { // Only save after 5 seconds of watching
+                if (player.currentTime > 2) {
                     localStorage.setItem(storageKey, player.currentTime);
                 }
             };
             
-            // 3. Mark as finished if video ends
+            // 3. Clear memory on finish
             player.onended = () => {
                 localStorage.removeItem(storageKey);
             };
@@ -176,6 +92,11 @@
 
         if(posterUrl) player.poster = decodeURIComponent(posterUrl);
         player.load();
+
+        // Error Handing
+        player.onerror = () => {
+            console.log("Video source error. Link might be dead.");
+        };
     </script>
 </body>
 </html>
