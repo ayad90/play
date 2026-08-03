@@ -4,99 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="referrer" content="no-referrer">
-    <title>VIP PURE PLAYER</title>
+    <title>VIP REMOTE PLAYER</title>
     <style>
-        /* PURE BLACK CLEAN UI - ONLY VIDEO */
-        body, html { 
-            margin: 0; padding: 0; 
-            background: #000; 
-            height: 100vh; 
-            width: 100vw; 
-            overflow: hidden; 
-            display: flex;
-            align-items: center; 
-            justify-content: center; 
-        }
-
-        .video-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        video {
-            width: 100%;
-            height: 100%;
-            /* Object-fit contain se video kategi nahi, cover se poori screen bhar jayegi */
-            object-fit: contain; 
-            outline: none;
-        }
+        body, html { margin:0; padding:0; background:#000; height:100vh; width:100vw; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+        video { width:100%; height:100%; object-fit:contain; outline:none; background:#000; }
     </style>
 </head>
 <body>
 
-    <div class="video-container">
-        <!-- Pure Player without any overlay buttons or ads -->
-        <video id="vPlayer" controls autoplay playsinline poster="">
-            <source id="vSource" src="" type="video/mp4">
-        </video>
-    </div>
+    <video id="vPlayer" controls autoplay playsinline>
+        <source id="vSource" src="" type="video/mp4">
+    </video>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        let videoUrl = urlParams.get('v'); 
-        let posterUrl = urlParams.get('p'); 
+        // --- FIREBASE CONFIG (Wahi jo Admin Panel mein hai) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-EuuxfvWJsKsYa_bxyJaSwk5iIW_tX-4",
+            authDomain: "study-material-6ec20.firebaseapp.com",
+            databaseURL: "https://study-material-6ec20-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "study-material-6ec20"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
+        const urlParams = new URLSearchParams(window.location.search);
+        let v = urlParams.get('v'); 
         const player = document.getElementById('vPlayer');
         const source = document.getElementById('vSource');
 
-        if(videoUrl) {
-            videoUrl = decodeURIComponent(videoUrl);
-            
-            // Auto Fix for Dropbox & Pixeldrain
-            if(videoUrl.includes('dropbox.com')) {
-                videoUrl = videoUrl.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
-            }
-            if(videoUrl.includes('pixeldrain.com/u/')) {
-                videoUrl = 'https://pixeldrain.com/api/file/' + videoUrl.split('/').pop();
-            }
-            
-            source.src = videoUrl;
-            
-            // --- SILENT AUTO-RESUME LOGIC ---
-            const storageKey = "pv_" + btoa(videoUrl).substring(0, 12);
-
-            // 1. Silent Resume (No toast/pop-up)
-            player.addEventListener('loadedmetadata', function() {
-                const savedTime = localStorage.getItem(storageKey);
-                if (savedTime) {
-                    player.currentTime = parseFloat(savedTime);
-                }
-                player.play(); // Automatic Play
-            });
-
-            // 2. Continuous Background Save
-            player.ontimeupdate = () => {
-                if (player.currentTime > 2) {
-                    localStorage.setItem(storageKey, player.currentTime);
-                }
-            };
-            
-            // 3. Clear memory on finish
-            player.onended = () => {
-                localStorage.removeItem(storageKey);
-            };
+        if(v) {
+            v = decodeURIComponent(v);
+            // Dropbox Direct Fix
+            if(v.includes('dropbox.com')) v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
+            source.src = v;
+            player.load();
         }
 
-        if(posterUrl) player.poster = decodeURIComponent(posterUrl);
-        player.load();
+        // --- REMOTE CONTROL LISTENER ---
+        // Jab Admin Panel se koi command aayega, ye turant react karega
+        db.ref('remote_control').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (!data) return;
 
-        // Error Handing
-        player.onerror = () => {
-            console.log("Video source error. Link might be dead.");
-        };
+            if (data.action === "play") player.play();
+            if (data.action === "pause") player.pause();
+            if (data.action === "stop") {
+                player.pause();
+                player.currentTime = 0;
+            }
+            if (data.action === "seek") {
+                player.currentTime = parseFloat(data.value);
+            }
+        });
     </script>
 </body>
 </html>
