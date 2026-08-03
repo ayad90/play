@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VIP REMOTE PLAYER</title>
+    <meta name="referrer" content="no-referrer">
+    <title>VIP SMART PLAYER</title>
     <style>
-        body, html { margin:0; padding:0; background:#000; height:100vh; width:100vw; overflow:hidden; display:flex; align-items:center; justify-content:center; }
-        video { width:100%; height:100%; object-fit:contain; outline:none; }
+        body, html { margin: 0; padding: 0; background: #000; height: 100vh; width: 100vw; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        video { width: 100%; height: 100%; object-fit: contain; outline: none; }
     </style>
 </head>
 <body>
@@ -15,16 +16,10 @@
         <source id="vSource" src="" type="video/mp4">
     </video>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
-        const cfg = { apiKey: "AIzaSyD-EuuxfvWJsKsYa_bxyJaSwk5iIW_tX-4", authDomain: "study-material-6ec20.firebaseapp.com", databaseURL: "https://study-material-6ec20-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "study-material-6ec20" };
-        if (!firebase.apps.length) firebase.initializeApp(cfg);
-        const db = firebase.database();
-
         const urlParams = new URLSearchParams(window.location.search);
         let v = urlParams.get('v'); 
-        let id = urlParams.get('id'); // Get unique movie ID
+        let startTime = urlParams.get('t') || 0; // NEW: Get start time in seconds
         const player = document.getElementById('vPlayer');
 
         if(v) {
@@ -34,16 +29,12 @@
             player.load();
         }
 
-        // --- SPECIFIC REMOTE CONTROL LISTENER ---
-        if(id) {
-            db.ref('remote_control/' + id).on('value', s => {
-                const cmd = s.val();
-                if(!cmd) return;
-                if(cmd.action === 'play') player.play();
-                if(cmd.action === 'pause') player.pause();
-                if(cmd.action === 'seek') player.currentTime = cmd.value;
-            });
-        }
+        // --- SMART START TIME LOGIC ---
+        player.addEventListener('loadedmetadata', function() {
+            if(startTime > 0) {
+                player.currentTime = parseFloat(startTime);
+            }
+        });
     </script>
 </body>
 </html>
