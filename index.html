@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="referrer" content="no-referrer">
     <title>VIP REMOTE PLAYER</title>
     <style>
         body, html { margin:0; padding:0; background:#000; height:100vh; width:100vw; overflow:hidden; display:flex; align-items:center; justify-content:center; }
-        video { width:100%; height:100%; object-fit:contain; outline:none; background:#000; }
+        video { width:100%; height:100%; object-fit:contain; outline:none; }
     </style>
 </head>
 <body>
@@ -16,50 +15,35 @@
         <source id="vSource" src="" type="video/mp4">
     </video>
 
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    
     <script>
-        // --- FIREBASE CONFIG (Wahi jo Admin Panel mein hai) ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyD-EuuxfvWJsKsYa_bxyJaSwk5iIW_tX-4",
-            authDomain: "study-material-6ec20.firebaseapp.com",
-            databaseURL: "https://study-material-6ec20-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "study-material-6ec20"
-        };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const cfg = { apiKey: "AIzaSyD-EuuxfvWJsKsYa_bxyJaSwk5iIW_tX-4", authDomain: "study-material-6ec20.firebaseapp.com", databaseURL: "https://study-material-6ec20-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "study-material-6ec20" };
+        if (!firebase.apps.length) firebase.initializeApp(cfg);
         const db = firebase.database();
 
         const urlParams = new URLSearchParams(window.location.search);
         let v = urlParams.get('v'); 
+        let id = urlParams.get('id'); // Get unique movie ID
         const player = document.getElementById('vPlayer');
-        const source = document.getElementById('vSource');
 
         if(v) {
             v = decodeURIComponent(v);
-            // Dropbox Direct Fix
-            if(v.includes('dropbox.com')) v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '') + '?raw=1';
-            source.src = v;
+            if(v.includes('dropbox.com')) v = v.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '') + '?raw=1';
+            document.getElementById('vSource').src = v;
             player.load();
         }
 
-        // --- REMOTE CONTROL LISTENER ---
-        // Jab Admin Panel se koi command aayega, ye turant react karega
-        db.ref('remote_control').on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (!data) return;
-
-            if (data.action === "play") player.play();
-            if (data.action === "pause") player.pause();
-            if (data.action === "stop") {
-                player.pause();
-                player.currentTime = 0;
-            }
-            if (data.action === "seek") {
-                player.currentTime = parseFloat(data.value);
-            }
-        });
+        // --- SPECIFIC REMOTE CONTROL LISTENER ---
+        if(id) {
+            db.ref('remote_control/' + id).on('value', s => {
+                const cmd = s.val();
+                if(!cmd) return;
+                if(cmd.action === 'play') player.play();
+                if(cmd.action === 'pause') player.pause();
+                if(cmd.action === 'seek') player.currentTime = cmd.value;
+            });
+        }
     </script>
 </body>
 </html>
